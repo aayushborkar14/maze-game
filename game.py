@@ -36,38 +36,54 @@ def render_text(text, size, color, x, y):
 
 
 def menu():
-    global running
+    global running, selected_level
     pygame.display.set_caption("Main Menu")
 
     while running:
         screen.fill((0, 0, 0))
-        menu_title = font_with_size(100).render("Main Menu", True, "#ffffff")
+        menu_title = font_with_size(100).render("Choose a Level", True, "#ffffff")
         menu_rect = menu_title.get_rect(center=(width / 2, 100))
         screen.blit(menu_title, menu_rect)
+        easy_color = medium_color = hard_color = "#ffffff"
+        if selected_level == 1:
+            easy_color = "#ff0000"
+        elif selected_level == 2:
+            medium_color = "#ff0000"
+        elif selected_level == 3:
+            hard_color = "#ff0000"
 
-        _, easy_rect = render_text("Easy", 50, "#ffffff", width / 2, 300)
-        _, medium_rect = render_text("Medium", 50, "#ffffff", width / 2, 400)
-        _, hard_rect = render_text("Hard", 50, "#ffffff", width / 2, 500)
+        _, easy_rect = render_text("Easy", 50, easy_color, width / 2, 300)
+        _, medium_rect = render_text("Medium", 50, medium_color, width / 2, 400)
+        _, hard_rect = render_text("Hard", 50, hard_color, width / 2, 500)
 
         render_text("Press Enter to start", 30, "#ffffff", width / 2, 600)
         render_text("Press Esc to exit", 30, "#ffffff", width / 2, 650)
 
         if easy_rect.collidepoint(pygame.mouse.get_pos()):
-            pygame.draw.rect(screen, "#ffffff", easy_rect, 2)
+            selected_level = 1
             if pygame.mouse.get_pressed()[0]:
                 return maze(1)
         if medium_rect.collidepoint(pygame.mouse.get_pos()):
-            pygame.draw.rect(screen, "#ffffff", medium_rect, 2)
+            selected_level = 2
             if pygame.mouse.get_pressed()[0]:
                 return maze(2)
         if hard_rect.collidepoint(pygame.mouse.get_pos()):
-            pygame.draw.rect(screen, "#ffffff", hard_rect, 2)
+            selected_level = 3
             if pygame.mouse.get_pressed()[0]:
                 return maze(3)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_RETURN:
+                    return maze(selected_level)
+                if event.key == pygame.K_UP:
+                    selected_level = max(1, selected_level - 1)
+                if event.key == pygame.K_DOWN:
+                    selected_level = min(3, selected_level + 1)
+                if event.key == pygame.K_ESCAPE:
+                    running = False
 
         pygame.display.update()
         clock.tick(60)  # limit the frame rate to 60 FPS

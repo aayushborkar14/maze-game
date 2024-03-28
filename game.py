@@ -6,6 +6,7 @@ size = width, height = 1280, 720
 screen = pygame.display.set_mode(size)
 running = True
 clock = pygame.time.Clock()
+selected_level = 1
 
 
 def font_with_size(size):
@@ -27,6 +28,13 @@ def maze(level):
         clock.tick(60)  # limit the frame rate to 60 FPS
 
 
+def render_text(text, size, color, x, y):
+    text = font_with_size(size).render(text, True, color)
+    text_rect = text.get_rect(center=(x, y))
+    screen.blit(text, text_rect)
+    return text, text_rect
+
+
 def menu():
     global running
     pygame.display.set_caption("Main Menu")
@@ -37,15 +45,12 @@ def menu():
         menu_rect = menu_title.get_rect(center=(width / 2, 100))
         screen.blit(menu_title, menu_rect)
 
-        easy_text = font_with_size(50).render("Easy", True, "#ffffff")
-        medium_text = font_with_size(50).render("Medium", True, "#ffffff")
-        hard_text = font_with_size(50).render("Hard", True, "#ffffff")
-        easy_rect = easy_text.get_rect(center=(width / 2, 300))
-        medium_rect = medium_text.get_rect(center=(width / 2, 400))
-        hard_rect = hard_text.get_rect(center=(width / 2, 500))
-        screen.blit(easy_text, easy_rect)
-        screen.blit(medium_text, medium_rect)
-        screen.blit(hard_text, hard_rect)
+        _, easy_rect = render_text("Easy", 50, "#ffffff", width / 2, 300)
+        _, medium_rect = render_text("Medium", 50, "#ffffff", width / 2, 400)
+        _, hard_rect = render_text("Hard", 50, "#ffffff", width / 2, 500)
+
+        render_text("Press Enter to start", 30, "#ffffff", width / 2, 600)
+        render_text("Press Esc to exit", 30, "#ffffff", width / 2, 650)
 
         if easy_rect.collidepoint(pygame.mouse.get_pos()):
             pygame.draw.rect(screen, "#ffffff", easy_rect, 2)

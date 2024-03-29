@@ -1,12 +1,16 @@
 import pygame
+from tiles import Tilemap, Tileset
 
 pygame.init()
 
-size = width, height = 1280, 720
+size = width, height = 960, 640
 screen = pygame.display.set_mode(size)
 running = True
 clock = pygame.time.Clock()
 selected_level = 1
+ts = Tileset("assets/gen5.png")
+ts.load()
+tm = Tilemap(ts, size=(30, 20), rect=(0, 0, 960, 640))
 
 
 def font_with_size(size):
@@ -16,10 +20,11 @@ def font_with_size(size):
 def maze(level):
     global running
     while running:
-        screen.fill((0, 0, 0))
+        # screen.fill((0, 0, 0))
         title = font_with_size(100).render(f"LEVEL {level}", True, "#ffffff")
         title_rect = title.get_rect(center=(width / 2, 100))
-        screen.blit(title, title_rect)
+        # screen.blit(title, title_rect)
+        screen.blit(tm.image, tm.rect)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -52,12 +57,12 @@ def menu():
         elif selected_level == 3:
             hard_color = "#ff0000"
 
-        _, easy_rect = render_text("Easy", 50, easy_color, width / 2, 300)
-        _, medium_rect = render_text("Medium", 50, medium_color, width / 2, 400)
-        _, hard_rect = render_text("Hard", 50, hard_color, width / 2, 500)
+        _, easy_rect = render_text("Easy", 50, easy_color, width / 2, 250)
+        _, medium_rect = render_text("Medium", 50, medium_color, width / 2, 325)
+        _, hard_rect = render_text("Hard", 50, hard_color, width / 2, 400)
 
-        render_text("Press Enter to start", 30, "#ffffff", width / 2, 600)
-        render_text("Press Esc to exit", 30, "#ffffff", width / 2, 650)
+        render_text("Press Enter to start", 30, "#ffffff", width / 2, 500)
+        render_text("Press Esc to exit", 30, "#ffffff", width / 2, 550)
 
         if easy_rect.collidepoint(pygame.mouse.get_pos()):
             selected_level = 1

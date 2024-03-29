@@ -48,4 +48,7 @@ class Tilemap:
                 self.image.blit(tile, (j * 32, i * 32))
 
     def set_npy(self, file):
-        pass  # TODO
+        self.map = np.load(file)
+        print(self.map)
+        print(self.map.shape)
+        self.render()

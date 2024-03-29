@@ -10,7 +10,7 @@ clock = pygame.time.Clock()
 selected_level = 1
 ts = Tileset("assets/gen5.png")
 ts.load()
-tm = Tilemap(ts, size=(30, 20), rect=(0, 0, 960, 640))
+tm = Tilemap(ts, size=(20, 30), rect=(0, 0, 960, 640))
 
 
 def font_with_size(size):
@@ -19,6 +19,7 @@ def font_with_size(size):
 
 def maze(level):
     global running
+    tm.set_npy("assets/TerrainLayer.npy")
     while running:
         # screen.fill((0, 0, 0))
         title = font_with_size(100).render(f"LEVEL {level}", True, "#ffffff")

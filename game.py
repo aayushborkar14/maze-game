@@ -38,6 +38,7 @@ def maze(level):
     map.process_layers()
     print(map.rect)
     pygame.key.set_repeat(150, 150)
+    rflip = False
     while running:
         screen.blit(
             map.image,
@@ -49,7 +50,9 @@ def maze(level):
                 32 * (player_pos[1] + 10),
             ),
         )
-        screen.blit(ss.tiles[sprite], (14 * 32, 9 * 32))
+        screen.blit(
+            pygame.transform.flip(ss.tiles[sprite], rflip, False), (14 * 32, 9 * 32)
+        )
         move_offset = None
         sprite1 = None
         sprite2 = None
@@ -64,21 +67,25 @@ def maze(level):
                     sprite = 6
                     sprite1 = 15
                     sprite2 = 24
+                    rflip = False
                     move_offset = (0, -1)
                 if event.key == pygame.K_DOWN:
                     sprite = 0
                     sprite1 = 9
                     sprite2 = 18
+                    rflip = False
                     move_offset = (0, 1)
                 if event.key == pygame.K_LEFT:
                     sprite = 3
                     sprite1 = 12
                     sprite2 = 21
+                    rflip = False
                     move_offset = (-1, 0)
                 if event.key == pygame.K_RIGHT:
                     sprite = 3
                     sprite1 = 12
                     sprite2 = 21
+                    rflip = True
                     move_offset = (1, 0)
         if move_offset is not None:
             dx, dy = move_offset
@@ -94,9 +101,15 @@ def maze(level):
                     ),
                 )
                 if i % 8:
-                    screen.blit(ss.tiles[sprite1], (14 * 32, 9 * 32))
+                    screen.blit(
+                        pygame.transform.flip(ss.tiles[sprite1], rflip, False),
+                        (14 * 32, 9 * 32),
+                    )
                 else:
-                    screen.blit(ss.tiles[sprite2], (14 * 32, 9 * 32))
+                    screen.blit(
+                        pygame.transform.flip(ss.tiles[sprite2], rflip, False),
+                        (14 * 32, 9 * 32),
+                    )
                 pygame.display.update()
                 clock.tick(60)  # limit the frame rate to 60 FPS
             player_pos = (player_pos[0] + dx, player_pos[1] + dy)

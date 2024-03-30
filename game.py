@@ -18,23 +18,14 @@ map = Tilemap(
     size=(110, 110),
     rect=(0, 0, 960, 640),
 )
+player_up = (6133, 6134)
+player_down = (6135, 6136)
+player_left = (6137, 6138)
+player_right = (6139, 6140)
 
 
 def font_with_size(size):
     return pygame.font.Font("assets/Teko-Regular.ttf", size)
-
-
-def maze(level):
-    global running
-    map.render_around(20, 20)
-    while running:
-        screen.blit(map.image, map.rect)
-
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                running = False
-        pygame.display.update()
-        clock.tick(60)  # limit the frame rate to 60 FPS
 
 
 def render_text(text, size, color, x, y):
@@ -42,6 +33,42 @@ def render_text(text, size, color, x, y):
     text_rect = text.get_rect(center=(x, y))
     screen.blit(text, text_rect)
     return text, text_rect
+
+
+def maze(level):
+    global running
+    player_pos = (20, 20)
+    player_sprite = player_down
+    while running:
+        map.render_around(*player_pos)
+        screen.blit(map.image, map.rect)
+        screen.blit(
+            ts.tiles[player_sprite[0]], ((player_pos[0] - 1) * 32, player_pos[1] * 32)
+        )
+        screen.blit(
+            ts.tiles[player_sprite[1]], (player_pos[0] * 32, player_pos[1] * 32)
+        )
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    return menu()
+                if event.key == pygame.K_UP:
+                    player_sprite = player_up
+                    player_pos = (player_pos[0], player_pos[1] - 1)
+                if event.key == pygame.K_DOWN:
+                    player_sprite = player_down
+                    player_pos = (player_pos[0], player_pos[1] + 1)
+                if event.key == pygame.K_LEFT:
+                    player_sprite = player_left
+                    player_pos = (player_pos[0] - 1, player_pos[1])
+                if event.key == pygame.K_RIGHT:
+                    player_sprite = player_right
+                    player_pos = (player_pos[0] + 1, player_pos[1])
+        pygame.display.update()
+        clock.tick(60)  # limit the frame rate to 60 FPS
 
 
 def menu():

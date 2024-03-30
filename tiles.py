@@ -45,14 +45,15 @@ class Tilemap:
         self.layer2 = np.load(terrain_layer)
         self.layer3 = np.load(top_layer)
 
-        h, w = self.gamesize
+        h, w = self.size
         self.image = pygame.Surface((32 * w, 32 * h))
         if rect:
             self.rect = pygame.Rect(rect)
         else:
             self.rect = self.image.get_rect()
 
-    def render_around(self, x, y):
+    def render_around(self, player_pos, player_sprite):
+        x, y = player_pos
         for i in range(y - 9, y + 11):
             for j in range(x - 14, x + 16):
                 tile1 = self.tileset.tiles[self.layer1[i, j]]
@@ -63,9 +64,13 @@ class Tilemap:
                 if self.layer3[i, j] != 6124:
                     tile3 = self.tileset.tiles[self.layer3[i, j]]
                     self.image.blit(tile3, ((j - x + 14) * 32, (i - y + 9) * 32))
+        player_tile_0 = self.tileset.tiles[player_sprite[0]]
+        player_tile_1 = self.tileset.tiles[player_sprite[1]]
+        self.image.blit(player_tile_0, (15 * 32, 9 * 32))
+        self.image.blit(player_tile_1, (15 * 32, 10 * 32))
 
     def process_layers(self):
-        m, n = self.gamesize
+        m, n = self.size
         for i in range(m):
             for j in range(n):
                 tile1 = self.tileset.tiles[self.layer1[i, j]]

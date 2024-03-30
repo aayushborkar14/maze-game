@@ -16,7 +16,6 @@ map = Tilemap(
     "assets/TerrainLayer.npy",
     "assets/TopLayer.npy",
     size=(110, 110),
-    rect=(0, 0, 960, 640),
 )
 player_up = (6133, 6134)
 player_down = (6135, 6136)
@@ -39,16 +38,21 @@ def maze(level):
     global running
     player_pos = (20, 20)
     player_sprite = player_down
+    map.process_layers()
+    print(map.rect)
     while running:
-        map.render_around(*player_pos)
-        screen.blit(map.image, map.rect)
+        # map.render_around(player_pos, player_sprite)
         screen.blit(
-            ts.tiles[player_sprite[0]], ((player_pos[0] - 1) * 32, player_pos[1] * 32)
+            map.image,
+            map.rect,
+            (
+                32 * (player_pos[0] - 14),
+                32 * (player_pos[1] - 9),
+                32 * (player_pos[0] + 15),
+                32 * (player_pos[1] + 10),
+            ),
         )
-        screen.blit(
-            ts.tiles[player_sprite[1]], (player_pos[0] * 32, player_pos[1] * 32)
-        )
-
+        move_offset = None
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
@@ -57,16 +61,32 @@ def maze(level):
                     return menu()
                 if event.key == pygame.K_UP:
                     player_sprite = player_up
-                    player_pos = (player_pos[0], player_pos[1] - 1)
+                    move_offset = (0, -1)
                 if event.key == pygame.K_DOWN:
                     player_sprite = player_down
-                    player_pos = (player_pos[0], player_pos[1] + 1)
+                    move_offset = (0, 1)
                 if event.key == pygame.K_LEFT:
                     player_sprite = player_left
-                    player_pos = (player_pos[0] - 1, player_pos[1])
+                    move_offset = (-1, 0)
                 if event.key == pygame.K_RIGHT:
                     player_sprite = player_right
-                    player_pos = (player_pos[0] + 1, player_pos[1])
+                    move_offset = (1, 0)
+        if move_offset is not None:
+            dx, dy = move_offset
+            for i in range(4, 32, 4):
+                screen.blit(
+                    map.image,
+                    map.rect,
+                    (
+                        32 * (player_pos[0] - 14) + i * dx,
+                        32 * (player_pos[1] - 9) + i * dy,
+                        32 * (player_pos[0] + 15) + i * dx,
+                        32 * (player_pos[1] + 10) + i * dy,
+                    ),
+                )
+                pygame.display.update()
+                clock.tick(60)  # limit the frame rate to 60 FPS
+            player_pos = (player_pos[0] + dx, player_pos[1] + dy)
         pygame.display.update()
         clock.tick(60)  # limit the frame rate to 60 FPS
 

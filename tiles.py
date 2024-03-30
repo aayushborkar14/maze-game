@@ -35,6 +35,7 @@ class Tilemap:
         base_layer,
         terrain_layer,
         top_layer,
+        maze_layer,
         size=(110, 110),
         rect=None,
         gamesize=(20, 30),
@@ -45,6 +46,7 @@ class Tilemap:
         self.layer1 = np.load(base_layer)
         self.layer2 = np.load(terrain_layer)
         self.layer3 = np.load(top_layer)
+        self.maze = maze_layer
 
         h, w = self.size
         self.image = pygame.Surface((32 * w, 32 * h))
@@ -65,3 +67,6 @@ class Tilemap:
                 if self.layer3[i, j] != 6124:
                     tile3 = self.tileset.tiles[self.layer3[i, j]]
                     self.image.blit(tile3, (j * 32, i * 32))
+                if 20 <= i < 89 and 20 <= j < 89 and self.maze[i - 20, j - 20]:
+                    wall = self.tileset.tiles[1329]
+                    self.image.blit(wall, (j * 32, i * 32))

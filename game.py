@@ -1,5 +1,6 @@
 import pygame
 from tiles import Tilemap, Tileset
+from maze import Maze
 
 pygame.init()
 
@@ -11,13 +12,6 @@ selected_level = 1
 ts = Tileset("assets/gen5.png")
 ss = Tileset("assets/sprites.png", size=(16, 16))
 ts.load()
-map = Tilemap(
-    ts,
-    "assets/BaseLayer.npy",
-    "assets/TerrainLayer.npy",
-    "assets/TopLayer.npy",
-    size=(110, 110),
-)
 
 
 def font_with_size(size):
@@ -35,6 +29,15 @@ def maze(level):
     global running, ss, map
     player_pos = (20, 20)
     sprite = 0
+    m = Maze(70)
+    map = Tilemap(
+        ts,
+        "assets/BaseLayer.npy",
+        "assets/TerrainLayer.npy",
+        "assets/TopLayer.npy",
+        m.cells,
+        size=(110, 110),
+    )
     map.process_layers()
     print(map.rect)
     pygame.key.set_repeat(150, 150)
@@ -87,7 +90,16 @@ def maze(level):
                     sprite2 = 21
                     rflip = True
                     move_offset = (1, 0)
-        if move_offset is not None:
+        if (
+            move_offset is not None
+            and player_pos[0] + move_offset[0] >= 20
+            and player_pos[0] + move_offset[0] < 89
+            and player_pos[1] + move_offset[1] >= 20
+            and player_pos[1] + move_offset[1] < 89
+            and not m.cells[
+                player_pos[1] + move_offset[1] - 20, player_pos[0] + move_offset[0] - 20
+            ]
+        ):
             dx, dy = move_offset
             for i in range(4, 32, 4):
                 screen.blit(

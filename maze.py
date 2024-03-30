@@ -16,6 +16,8 @@ class Maze:
             (self.side, self.side), True
         )  # True if wall, False if path
         random.seed(time.time())
+        self.gen_maze()
+        self.gen_sol()
 
     def check_bounds(self, x, y):
         return 0 <= x < self.side and 0 <= y < self.side

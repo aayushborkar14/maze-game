@@ -15,7 +15,7 @@ map = Tilemap(
     "assets/BaseLayer.npy",
     "assets/TerrainLayer.npy",
     "assets/TopLayer.npy",
-    size=(20, 30),
+    size=(110, 110),
     rect=(0, 0, 960, 640),
 )
 
@@ -26,7 +26,7 @@ def font_with_size(size):
 
 def maze(level):
     global running
-    map.process_layers()
+    map.render_around(20, 20)
     while running:
         screen.blit(map.image, map.rect)
 

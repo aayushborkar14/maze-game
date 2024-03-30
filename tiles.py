@@ -29,31 +29,43 @@ class Tileset:
 
 class Tilemap:
     def __init__(
-        self, tileset, base_layer, terrain_layer, top_layer, size=(110, 110), rect=None
+        self,
+        tileset,
+        base_layer,
+        terrain_layer,
+        top_layer,
+        size=(110, 110),
+        rect=None,
+        gamesize=(20, 30),
     ):
         self.size = size
+        self.gamesize = gamesize
         self.tileset = tileset
-        self.map = np.zeros(size, dtype=int)
         self.layer1 = np.load(base_layer)
         self.layer2 = np.load(terrain_layer)
         self.layer3 = np.load(top_layer)
 
-        h, w = self.size
+        h, w = self.gamesize
         self.image = pygame.Surface((32 * w, 32 * h))
         if rect:
             self.rect = pygame.Rect(rect)
         else:
             self.rect = self.image.get_rect()
 
-    def render(self):
-        m, n = self.map.shape
-        for i in range(m):
-            for j in range(n):
-                tile = self.tileset.tiles[self.map[i, j]]
-                self.image.blit(tile, (j * 32, i * 32))
+    def render_around(self, x, y):
+        for i in range(y - 9, y + 11):
+            for j in range(x - 14, x + 16):
+                tile1 = self.tileset.tiles[self.layer1[i, j]]
+                self.image.blit(tile1, ((j - x + 14) * 32, (i - y + 9) * 32))
+                if self.layer2[i, j] != 6124:
+                    tile2 = self.tileset.tiles[self.layer2[i, j]]
+                    self.image.blit(tile2, ((j - x + 14) * 32, (i - y + 9) * 32))
+                if self.layer3[i, j] != 6124:
+                    tile3 = self.tileset.tiles[self.layer3[i, j]]
+                    self.image.blit(tile3, ((j - x + 14) * 32, (i - y + 9) * 32))
 
     def process_layers(self):
-        m, n = self.map.shape
+        m, n = self.gamesize
         for i in range(m):
             for j in range(n):
                 tile1 = self.tileset.tiles[self.layer1[i, j]]

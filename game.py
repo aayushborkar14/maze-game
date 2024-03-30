@@ -39,7 +39,6 @@ def maze(level):
     print(map.rect)
     pygame.key.set_repeat(150, 150)
     while running:
-        # map.render_around(player_pos, player_sprite)
         screen.blit(
             map.image,
             map.rect,

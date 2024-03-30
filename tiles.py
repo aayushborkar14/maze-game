@@ -24,6 +24,7 @@ class Tileset:
             for y in range(y0, h, dy):
                 tile = pygame.Surface(self.size, pygame.SRCALPHA)
                 tile.blit(self.image, (0, 0), (x, y, *self.size))
+                tile = pygame.transform.scale(tile, (32, 32))
                 self.tiles.append(tile)
 
 

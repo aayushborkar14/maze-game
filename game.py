@@ -9,6 +9,7 @@ running = True
 clock = pygame.time.Clock()
 selected_level = 1
 ts = Tileset("assets/gen5.png")
+ss = Tileset("assets/sprites.png", size=(16, 16))
 ts.load()
 map = Tilemap(
     ts,
@@ -17,10 +18,6 @@ map = Tilemap(
     "assets/TopLayer.npy",
     size=(110, 110),
 )
-player_up = (6133, 6134)
-player_down = (6135, 6136)
-player_left = (6137, 6138)
-player_right = (6139, 6140)
 
 
 def font_with_size(size):
@@ -35,11 +32,12 @@ def render_text(text, size, color, x, y):
 
 
 def maze(level):
-    global running
+    global running, ss, map
     player_pos = (20, 20)
-    player_sprite = player_down
+    sprite = 0
     map.process_layers()
     print(map.rect)
+    pygame.key.set_repeat(150, 150)
     while running:
         # map.render_around(player_pos, player_sprite)
         screen.blit(
@@ -52,24 +50,36 @@ def maze(level):
                 32 * (player_pos[1] + 10),
             ),
         )
+        screen.blit(ss.tiles[sprite], (14 * 32, 9 * 32))
         move_offset = None
+        sprite1 = None
+        sprite2 = None
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
+                    pygame.key.set_repeat(0, 0)
                     return menu()
                 if event.key == pygame.K_UP:
-                    player_sprite = player_up
+                    sprite = 6
+                    sprite1 = 15
+                    sprite2 = 24
                     move_offset = (0, -1)
                 if event.key == pygame.K_DOWN:
-                    player_sprite = player_down
+                    sprite = 0
+                    sprite1 = 9
+                    sprite2 = 18
                     move_offset = (0, 1)
                 if event.key == pygame.K_LEFT:
-                    player_sprite = player_left
+                    sprite = 3
+                    sprite1 = 12
+                    sprite2 = 21
                     move_offset = (-1, 0)
                 if event.key == pygame.K_RIGHT:
-                    player_sprite = player_right
+                    sprite = 3
+                    sprite1 = 12
+                    sprite2 = 21
                     move_offset = (1, 0)
         if move_offset is not None:
             dx, dy = move_offset
@@ -84,6 +94,10 @@ def maze(level):
                         32 * (player_pos[1] + 10) + i * dy,
                     ),
                 )
+                if i % 8:
+                    screen.blit(ss.tiles[sprite1], (14 * 32, 9 * 32))
+                else:
+                    screen.blit(ss.tiles[sprite2], (14 * 32, 9 * 32))
                 pygame.display.update()
                 clock.tick(60)  # limit the frame rate to 60 FPS
             player_pos = (player_pos[0] + dx, player_pos[1] + dy)

@@ -7,8 +7,8 @@ def proc(i):
 
 
 if len(sys.argv) != 3:
-    print("Usage: python tmx_to_npy.py <input_file> <output_file>")
+    print("Usage: python tmx_csv_to_npy.py <input_file> <output_file>")
     sys.exit(1)
 
 a = np.loadtxt(sys.argv[1], delimiter=",", dtype=int)
-np.save(sys.argv[2], proc(a))
+np.save(sys.argv[2], proc(a - 1))

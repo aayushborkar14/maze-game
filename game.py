@@ -36,6 +36,7 @@ def maze(level):
         "assets/TerrainLayer.npy",
         "assets/TopLayer.npy",
         m.cells,
+        m.sol_cells,
         size=(110, 110),
     )
     map.process_layers()

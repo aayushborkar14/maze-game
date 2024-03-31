@@ -37,6 +37,7 @@ class Tilemap:
         terrain_layer,
         top_layer,
         maze_layer,
+        sol_layer,
         size=(110, 110),
         rect=None,
         gamesize=(20, 30),
@@ -48,9 +49,11 @@ class Tilemap:
         self.layer2 = np.load(terrain_layer)
         self.layer3 = np.load(top_layer)
         self.maze = maze_layer
+        self.sol = sol_layer
 
         h, w = self.size
         self.image = pygame.Surface((32 * w, 32 * h))
+        self.solimage = pygame.Surface((32 * w, 32 * h))
         if rect:
             self.rect = pygame.Rect(rect)
         else:
@@ -88,3 +91,11 @@ class Tilemap:
                     else:
                         wall = random.choice([wallh, wallv])
                         self.image.blit(wall, (j * 32, i * 32))
+        self.solimage = self.image.copy()
+        soltile = self.tileset.tiles[4378]
+        for i in range(20, 89):
+            for j in range(20, 89):
+                if not self.sol[i - 20, j - 20]:
+                    self.solimage.blit(soltile, (j * 32, i * 32))
+        pygame.image.save(self.solimage, "path.png")
+        self.solimage = None

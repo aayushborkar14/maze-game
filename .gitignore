@@ -1,3 +1,7 @@
+# Path generated per game
+path.png
+path.txt
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

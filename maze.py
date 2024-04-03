@@ -43,6 +43,24 @@ class Maze:
             self.solution.append(u)
             self.sol_cells[*u] = False
             u = self.parent[u]
+        prex, prey = 0, 0
+        pathstr = ""
+        for y, x in self.solution[::-1]:
+            if x == 0 and y == 0:
+                continue
+            if x == prex:
+                if y > prey:
+                    pathstr += "D"
+                else:
+                    pathstr += "U"
+            elif y == prey:
+                if x > prex:
+                    pathstr += "R"
+                else:
+                    pathstr += "L"
+            prex, prey = x, y
+        with open("path.txt", "w+") as f:
+            f.write(pathstr)
 
     def __str__(self):
         string = ""

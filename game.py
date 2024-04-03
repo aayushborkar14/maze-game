@@ -40,7 +40,6 @@ def maze(level):
         size=(110, 110),
     )
     map.process_layers()
-    print(map.rect)
     pygame.key.set_repeat(150, 150)
     rflip = False
     while running:

@@ -29,7 +29,7 @@ def maze(level):
     global running, ss, map
     player_pos = (20, 20)
     sprite = 0
-    m = Maze(70)
+    m = Maze(level, 70)
     map = Tilemap(
         ts,
         "assets/BaseLayer.npy",

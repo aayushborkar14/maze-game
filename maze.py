@@ -42,7 +42,6 @@ class Maze:
                 edge_list.append((a, a + 1))
             if y < self.side - 2:
                 edge_list.append((a, a + n))
-        print(edge_list)
         random.shuffle(edge_list)
         for a, b in edge_list:
             if dsu.find_set(a) == dsu.find_set(b):
@@ -58,7 +57,29 @@ class Maze:
                 self.cells[(x1 + x2) // 2, y1] = False
                 self.cells[x1, y1] = False
                 self.cells[x2, y1] = False
-        print(self.cells)
+        self.solution = self.solve_maze(
+            [[False for _x in range(self.side)] for _y in range(self.side)]
+        )
+        self.write_path()
+
+    def solve_maze(self, visited, x=0, y=0):
+        if visited[x][y]:
+            return False
+        visited[x][y] = True
+        if x == self.side - 1 and y == self.side - 1:
+            return [(x, y)]
+        dirs = [(1, 0), (0, 1), (-1, 0), (0, -1)]
+        for dx, dy in dirs:
+            nx, ny = x + dx, y + dy
+            if not self.check_bounds(nx, ny):
+                continue
+            if self.cells[nx, ny]:
+                continue
+            a = self.solve_maze(visited, nx, ny)
+            if a:
+                a.append((x, y))
+                return a
+        return False
 
     def recursive_backtrack(self, x=0, y=0):
         self.cells[x, y] = False
@@ -81,9 +102,13 @@ class Maze:
             self.solution.append(u)
             self.sol_cells[*u] = False
             u = self.parent[u]
+        self.write_path()
+
+    def write_path(self):
         prex, prey = 0, 0
         pathstr = ""
         for y, x in self.solution[::-1]:
+            self.sol_cells[y, x] = False
             if x == 0 and y == 0:
                 continue
             if x == prex:

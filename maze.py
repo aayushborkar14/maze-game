@@ -105,7 +105,7 @@ class Maze:
 
     def solve_maze(self, visited, x=0, y=0):
         if visited[x][y]:
-            return False
+            return []
         visited[x][y] = True
         if x == self.side - 1 and y == self.side - 1:
             return [(x, y)]
@@ -120,13 +120,13 @@ class Maze:
             if a:
                 a.append((x, y))
                 return a
-        return False
+        return []
 
     def recursive_backtrack(self, x=0, y=0):
         self.cells[x, y] = False
         dirs = [(1, 0), (0, 1), (-1, 0), (0, -1)]
         random.shuffle(dirs)
-        for dx, dy in dirs[::-1]:
+        for dx, dy in dirs:
             nx, ny = x + 2 * dx, y + 2 * dy
             if self.check_bounds(nx, ny) and self.cells[nx, ny]:
                 self.cells[x + dx, y + dy] = False

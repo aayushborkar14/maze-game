@@ -57,8 +57,8 @@ def maze(level):
             pygame.transform.flip(ss.tiles[sprite], rflip, False), (14 * 32, 9 * 32)
         )
         move_offset = None
-        sprite1 = None
-        sprite2 = None
+        sprite1 = 0
+        sprite2 = 0
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False

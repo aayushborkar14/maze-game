@@ -60,7 +60,7 @@ class Maze:
                 self.cells[x1, y1] = False
                 self.cells[x2, y1] = False
         self.solution = self.solve_maze(
-            [[False for _x in range(self.side)] for _y in range(self.side)]
+            [[False for _ in range(self.side)] for _ in range(self.side)]
         )
         self.write_path()
 
@@ -99,7 +99,7 @@ class Maze:
                         walls.append((nx, ny))
             walls.remove((wx, wy))
         self.solution = self.solve_maze(
-            [[False for _x in range(self.side)] for _y in range(self.side)]
+            [[False for _ in range(self.side)] for _ in range(self.side)]
         )
         self.write_path()
 
@@ -207,6 +207,6 @@ class Maze:
                     if u in unvisited:
                         unvisited.remove(u)
         self.solution = self.solve_maze(
-            [[False for _x in range(self.side)] for _y in range(self.side)]
+            [[False for _ in range(self.side)] for _ in range(self.side)]
         )
         self.write_path()

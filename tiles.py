@@ -72,25 +72,9 @@ class Tilemap:
                     tile3 = self.tileset.tiles[self.layer3[i, j]]
                     self.image.blit(tile3, (j * 32, i * 32))
                 if 20 <= i < 89 and 20 <= j < 89 and self.maze[i - 20, j - 20]:
-                    wallv = self.tileset.tiles[5490]
-                    wallh = self.tileset.tiles[6367]
-                    hn = 0
-                    vn = 0
-                    if 21 <= i < 89 and self.maze[i - 21, j - 20]:
-                        hn += 1
-                    if i < 88 and self.maze[i - 19, j - 20]:
-                        hn += 1
-                    if 21 <= j < 89 and self.maze[i - 20, j - 21]:
-                        vn += 1
-                    if j < 88 and self.maze[i - 20, j - 19]:
-                        vn += 1
-                    if hn > vn:
-                        self.image.blit(wallh, (j * 32, i * 32))
-                    elif vn > hn:
-                        self.image.blit(wallv, (j * 32, i * 32))
-                    else:
-                        wall = random.choice([wallh, wallv])
-                        self.image.blit(wall, (j * 32, i * 32))
+                    wall = self.tileset.tiles[4109]
+                    wall = self.tileset.tiles[4109]
+                    self.image.blit(wall, (j * 32, i * 32))
         self.solimage = self.image.copy()
         soltile = self.tileset.tiles[4378]
         for i in range(20, 89):

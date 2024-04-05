@@ -20,8 +20,10 @@ class Maze:
         if level == 1:
             self.recursive_backtrack()
             self.recurse_sol()
-        elif level == 2 or level == 3:
+        elif level == 2:
             self.kruskal()
+        elif level == 3:
+            self.wilson()
 
     def check_bounds(self, x, y):
         return 0 <= x < self.side and 0 <= y < self.side
@@ -85,11 +87,9 @@ class Maze:
         self.cells[x, y] = False
         dirs = [(1, 0), (0, 1), (-1, 0), (0, -1)]
         random.shuffle(dirs)
-        while len(dirs):
-            dx, dy = dirs.pop()
-            nx = x + 2 * dx
-            ny = y + 2 * dy
-            if self.check_bounds(nx, ny) and self.cells[nx][ny]:
+        for dx, dy in dirs[::-1]:
+            nx, ny = x + 2 * dx, y + 2 * dy
+            if self.check_bounds(nx, ny) and self.cells[nx, ny]:
                 self.cells[x + dx, y + dy] = False
                 self.parent[(x + dx, y + dy)] = (x, y)
                 self.parent[(nx, ny)] = (x + dx, y + dy)
@@ -125,11 +125,49 @@ class Maze:
         with open("path.txt", "w+") as f:
             f.write(pathstr)
 
-    def __str__(self):
-        string = ""
-        conv = {True: "██", False: "  "}
-        for x in range(self.side):
-            for y in range(self.side):
-                string += conv[self.sol_cells[x, y]]
-            string += "\n"
-        return string
+    def wilson(self):
+        unvisited = [
+            (x, y) for x in range(0, self.side, 2) for y in range(0, self.side, 2)
+        ]
+        first = random.choice(unvisited)
+        unvisited.remove(first)
+        self.cells[first] = False
+        pres_path = []
+        while unvisited:
+            first = random.choice(unvisited)
+            pres = first
+            pres_path = [first]
+            erase = False
+            while True:
+                dirs = [(1, 0), (0, 1), (-1, 0), (0, -1)]
+                dx, dy = random.choice(dirs)
+                nx, ny = pres[0] + 2 * dx, pres[1] + 2 * dy
+                tries = 0
+                while (
+                    (not self.check_bounds(nx, ny)) or ((nx, ny) in pres_path)
+                ) and tries < 6:
+                    dx, dy = random.choice(dirs)
+                    nx, ny = pres[0] + 2 * dx, pres[1] + 2 * dy
+                    tries += 1
+                if not self.check_bounds(nx, ny):
+                    erase = True
+                    break
+                if (nx, ny) in pres_path:
+                    erase = True
+                    break
+                if (nx, ny) in unvisited:
+                    pres_path.append((pres[0] + dx, pres[1] + dy))
+                    pres_path.append((nx, ny))
+                    pres = (nx, ny)
+                else:
+                    pres_path.append((pres[0] + dx, pres[1] + dy))
+                    break
+            if not erase:
+                for u in pres_path:
+                    self.cells[u] = False
+                    if u in unvisited:
+                        unvisited.remove(u)
+        self.solution = self.solve_maze(
+            [[False for _x in range(self.side)] for _y in range(self.side)]
+        )
+        self.write_path()

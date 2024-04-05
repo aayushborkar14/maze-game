@@ -21,7 +21,7 @@ class Maze:
             self.recursive_backtrack()
             self.recurse_sol()
         elif level == 2:
-            self.kruskal()
+            self.prim()
         elif level == 3:
             self.wilson()
 
@@ -59,6 +59,45 @@ class Maze:
                 self.cells[(x1 + x2) // 2, y1] = False
                 self.cells[x1, y1] = False
                 self.cells[x2, y1] = False
+        self.solution = self.solve_maze(
+            [[False for _x in range(self.side)] for _y in range(self.side)]
+        )
+        self.write_path()
+
+    def prim(self):
+        n = self.side // 2 + 1
+        x, y = 2 * random.randint(0, n - 1), 2 * random.randint(0, n - 1)
+        path = [(x, y)]
+        dirs = [(1, 0), (0, 1), (-1, 0), (0, -1)]
+        walls = []
+        for dx, dy in dirs:
+            nx, ny = x + dx, y + dy
+            if self.check_bounds(nx, ny):
+                walls.append((nx, ny))
+        for x in range(n):
+            for y in range(n):
+                self.cells[2 * x, 2 * y] = False
+        while walls:
+            wx, wy = random.choice(walls)
+            unvisited = ()
+            if wx % 2 == 0:
+                if (wx, wy - 1) in path and (wx, wy + 1) not in path:
+                    unvisited = (wx, wy + 1)
+                elif (wx, wy + 1) in path and (wx, wy - 1) not in path:
+                    unvisited = (wx, wy - 1)
+            else:
+                if (wx - 1, wy) in path and (wx + 1, wy) not in path:
+                    unvisited = (wx + 1, wy)
+                elif (wx + 1, wy) in path and (wx - 1, wy) not in path:
+                    unvisited = (wx - 1, wy)
+            if unvisited:
+                self.cells[wx, wy] = False
+                path.append(unvisited)
+                for dx, dy in dirs:
+                    nx, ny = unvisited[0] + dx, unvisited[1] + dy
+                    if self.check_bounds(nx, ny):
+                        walls.append((nx, ny))
+            walls.remove((wx, wy))
         self.solution = self.solve_maze(
             [[False for _x in range(self.side)] for _y in range(self.side)]
         )

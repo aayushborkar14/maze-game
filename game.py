@@ -13,12 +13,10 @@ ts1 = Tileset("assets/gen5.png")
 ts21 = Tileset("assets/underwater1.png", size=(16, 16))
 ts22 = Tileset("assets/underwater2.png", size=(16, 16))
 ss = Tileset("assets/sprites.png", size=(16, 16))
-sso = Tileset("assets/spriteso.png", size=(16, 16))
 ts1.load()
 ts21.load()
 ts22.load()
 ss.load()
-sso.load()
 
 
 def font_with_size(size):
@@ -35,11 +33,9 @@ def render_text(text, size, color, x, y):
 def maze(level):
     global running, ss, map
     player_pos = (20, 20)
-    sprite = 0
     s_off = 0
     m = Maze(level, 70)
     map = None
-    cs = None
     if level == 1 or level == 3:
         map = Tilemap(
             ts1,
@@ -54,7 +50,6 @@ def maze(level):
             4378,
             size=(110, 110),
         )
-        cs = sso
         s_off = 0
     elif level == 2:
         map = Tilemap(
@@ -70,9 +65,9 @@ def maze(level):
             90,
             size=(110, 110),
         )
-        cs = ss
         s_off = 1
-    assert cs is not None
+    sprite = s_off
+    assert ss is not None
     assert map is not None
     map.process_layers()
     pygame.key.set_repeat(150, 150)
@@ -89,7 +84,7 @@ def maze(level):
             ),
         )
         screen.blit(
-            pygame.transform.flip(cs.tiles[sprite], rflip, False), (14 * 32, 9 * 32)
+            pygame.transform.flip(ss.tiles[sprite], rflip, False), (14 * 32, 9 * 32)
         )
         move_offset = None
         sprite1 = 0
@@ -149,12 +144,12 @@ def maze(level):
                 )
                 if i % 8:
                     screen.blit(
-                        pygame.transform.flip(cs.tiles[sprite1], rflip, False),
+                        pygame.transform.flip(ss.tiles[sprite1], rflip, False),
                         (14 * 32, 9 * 32),
                     )
                 else:
                     screen.blit(
-                        pygame.transform.flip(cs.tiles[sprite2], rflip, False),
+                        pygame.transform.flip(ss.tiles[sprite2], rflip, False),
                         (14 * 32, 9 * 32),
                     )
                 pygame.display.update()

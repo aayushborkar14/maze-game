@@ -10,8 +10,8 @@ running = True
 clock = pygame.time.Clock()
 selected_level = 1
 ts1 = Tileset("assets/gen5.png")
-ts21 = Tileset("assets/underwater1.png")
-ts22 = Tileset("assets/underwater2.png")
+ts21 = Tileset("assets/underwater1.png", size=(16, 16))
+ts22 = Tileset("assets/underwater2.png", size=(16, 16))
 ss = Tileset("assets/sprites.png", size=(16, 16))
 ts1.load()
 ts21.load()

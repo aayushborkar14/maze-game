@@ -31,24 +31,32 @@ class Tileset:
 class Tilemap:
     def __init__(
         self,
-        tileset,
+        tileset1,
+        tileset2,
+        tileset3,
         base_layer,
         terrain_layer,
         top_layer,
         maze_layer,
         sol_layer,
+        wall_tile,
+        sol_tile,
         size=(110, 110),
         rect=None,
         gamesize=(20, 30),
     ):
         self.size = size
         self.gamesize = gamesize
-        self.tileset = tileset
+        self.tileset1 = tileset1
+        self.tileset2 = tileset2
+        self.tileset3 = tileset3
         self.layer1 = np.load(base_layer)
         self.layer2 = np.load(terrain_layer)
         self.layer3 = np.load(top_layer)
         self.maze = maze_layer
         self.sol = sol_layer
+        self.wall_tile = wall_tile
+        self.sol_tile = sol_tile
 
         h, w = self.size
         self.image = pygame.Surface((32 * w, 32 * h))
@@ -62,20 +70,20 @@ class Tilemap:
         m, n = self.size
         for i in range(m):
             for j in range(n):
-                tile1 = self.tileset.tiles[self.layer1[i, j]]
-                self.image.blit(tile1, (j * 32, i * 32))
-                if self.layer2[i, j] != 6124:
-                    tile2 = self.tileset.tiles[self.layer2[i, j]]
+                if self.layer1[i, j] != -1:
+                    tile1 = self.tileset1.tiles[self.layer1[i, j]]
+                    self.image.blit(tile1, (j * 32, i * 32))
+                if self.layer2[i, j] != -1:
+                    tile2 = self.tileset2.tiles[self.layer2[i, j]]
                     self.image.blit(tile2, (j * 32, i * 32))
-                if self.layer3[i, j] != 6124:
-                    tile3 = self.tileset.tiles[self.layer3[i, j]]
+                if self.layer3[i, j] != -1:
+                    tile3 = self.tileset3.tiles[self.layer3[i, j]]
                     self.image.blit(tile3, (j * 32, i * 32))
                 if 20 <= i < 89 and 20 <= j < 89 and self.maze[i - 20, j - 20]:
-                    wall = self.tileset.tiles[4109]
-                    wall = self.tileset.tiles[4109]
+                    wall = self.tileset1.tiles[self.wall_tile]
                     self.image.blit(wall, (j * 32, i * 32))
         self.solimage = self.image.copy()
-        soltile = self.tileset.tiles[4378]
+        soltile = self.tileset1.tiles[self.sol_tile]
         for i in range(20, 89):
             for j in range(20, 89):
                 if not self.sol[i - 20, j - 20]:

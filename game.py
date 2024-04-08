@@ -9,9 +9,13 @@ screen = pygame.display.set_mode(size)
 running = True
 clock = pygame.time.Clock()
 selected_level = 1
-ts = Tileset("assets/gen5.png")
+ts1 = Tileset("assets/gen5.png")
+ts21 = Tileset("assets/underwater1.png")
+ts22 = Tileset("assets/underwater2.png")
 ss = Tileset("assets/sprites.png", size=(16, 16))
-ts.load()
+ts1.load()
+ts21.load()
+ts22.load()
 
 
 def font_with_size(size):
@@ -30,15 +34,36 @@ def maze(level):
     player_pos = (20, 20)
     sprite = 0
     m = Maze(level, 70)
-    map = Tilemap(
-        ts,
-        "assets/BaseLayer.npy",
-        "assets/TerrainLayer.npy",
-        "assets/TopLayer.npy",
-        m.cells,
-        m.sol_cells,
-        size=(110, 110),
-    )
+    map = None
+    if level == 1 or level == 3:
+        map = Tilemap(
+            ts1,
+            ts1,
+            ts1,
+            "assets/BaseLayer1.npy",
+            "assets/TerrainLayer1.npy",
+            "assets/TopLayer1.npy",
+            m.cells,
+            m.sol_cells,
+            4109,
+            4378,
+            size=(110, 110),
+        )
+    elif level == 2:
+        map = Tilemap(
+            ts21,
+            ts21,
+            ts22,
+            "assets/BaseLayer2.npy",
+            "assets/TerrainLayer2.npy",
+            "assets/TopLayer2.npy",
+            m.cells,
+            m.sol_cells,
+            434,
+            90,
+            size=(110, 110),
+        )
+    assert map is not None
     map.process_layers()
     pygame.key.set_repeat(150, 150)
     rflip = False

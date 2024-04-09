@@ -67,7 +67,6 @@ def maze(level):
         )
         s_off = 1
     sprite = s_off
-    assert ss is not None
     assert map is not None
     map.process_layers()
     pygame.key.set_repeat(150, 150)

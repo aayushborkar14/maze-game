@@ -1,6 +1,8 @@
 import random
 import time
+
 import numpy as np
+
 from disjoint_set import DisjointSet
 
 

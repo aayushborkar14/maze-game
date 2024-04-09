@@ -1,6 +1,7 @@
 import pygame
-from tiles import Tilemap, Tileset
+
 from maze import Maze
+from tiles import Tilemap, Tileset
 
 pygame.init()
 

@@ -43,10 +43,8 @@ class Tilemap:
         sol_tile,
         size=(110, 110),
         rect=None,
-        gamesize=(20, 30),
     ):
         self.size = size
-        self.gamesize = gamesize
         self.tileset1 = tileset1
         self.tileset2 = tileset2
         self.tileset3 = tileset3

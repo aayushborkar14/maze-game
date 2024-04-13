@@ -42,6 +42,7 @@ class Tilemap:
         wall_tile,
         sol_tile,
         size=(110, 110),
+        game=(70 - 1, 70 - 1),
         rect=None,
     ):
         self.size = size
@@ -55,6 +56,8 @@ class Tilemap:
         self.sol = sol_layer
         self.wall_tile = wall_tile
         self.sol_tile = sol_tile
+        self.gamestart = (size[0] - game[0]) // 2
+        self.gameend = (size[0] + game[0]) // 2
 
         h, w = self.size
         self.image = pygame.Surface((32 * w, 32 * h))
@@ -77,14 +80,18 @@ class Tilemap:
                 if self.layer3[i, j] != -1:
                     tile3 = self.tileset3.tiles[self.layer3[i, j]]
                     self.image.blit(tile3, (j * 32, i * 32))
-                if 20 <= i < 89 and 20 <= j < 89 and self.maze[i - 20, j - 20]:
+                if (
+                    self.gamestart <= i < self.gameend
+                    and self.gamestart <= j < self.gameend
+                    and self.maze[i - self.gamestart, j - self.gamestart]
+                ):
                     wall = self.tileset1.tiles[self.wall_tile]
                     self.image.blit(wall, (j * 32, i * 32))
         self.solimage = self.image.copy()
         soltile = self.tileset1.tiles[self.sol_tile]
-        for i in range(20, 89):
-            for j in range(20, 89):
-                if not self.sol[i - 20, j - 20]:
+        for i in range(self.gamestart, self.gameend):
+            for j in range(self.gamestart, self.gameend):
+                if not self.sol[i - self.gamestart, j - self.gamestart]:
                     self.solimage.blit(soltile, (j * 32, i * 32))
         pygame.image.save(self.solimage, "path.png")
         self.solimage = None

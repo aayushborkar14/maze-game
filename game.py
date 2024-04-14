@@ -14,6 +14,7 @@ ts2 = Tileset("assets/gen5.png")
 ts11 = Tileset("assets/underwater1.png", size=(16, 16))
 ts12 = Tileset("assets/underwater2.png", size=(16, 16))
 ts3 = Tileset("assets/swampy.png")
+tsc = Tileset("assets/legacyadventure.png", size=(16, 16))
 ss = Tileset("assets/sprites.png", size=(16, 16))
 ts2.load()
 ts11.load()
@@ -39,6 +40,8 @@ def maze(level):
     s_off = 0
     m = Maze(level, 70)
     map = None
+    gamestart = 20
+    gameend = 89
     if level == 1:
         map = Tilemap(
             ts11,
@@ -84,6 +87,23 @@ def maze(level):
             size=(110, 110),
         )
         s_off = 0
+    else:
+        m = Maze(level, 30)
+        map = Tilemap(
+            tsc,
+            tsc,
+            tsc,
+            "assets/BaseLayerCave.npy",
+            "assets/TerrainLayerCave.npy",
+            None,
+            m.cells,
+            m.sol_cells,
+            30,
+            99,
+            size=(70, 70),
+            game=(30 - 1, 30 - 1),
+        )
+        gameend = 49
     sprite = s_off
     assert map is not None
     map.process_layers()
@@ -139,12 +159,13 @@ def maze(level):
                     move_offset = (1, 0)
         if (
             move_offset is not None
-            and player_pos[0] + move_offset[0] >= 20
-            and player_pos[0] + move_offset[0] < 89
-            and player_pos[1] + move_offset[1] >= 20
-            and player_pos[1] + move_offset[1] < 89
+            and player_pos[0] + move_offset[0] >= gamestart
+            and player_pos[0] + move_offset[0] < gameend
+            and player_pos[1] + move_offset[1] >= gamestart
+            and player_pos[1] + move_offset[1] < gameend
             and not m.cells[
-                player_pos[1] + move_offset[1] - 20, player_pos[0] + move_offset[0] - 20
+                player_pos[1] + move_offset[1] - gamestart,
+                player_pos[0] + move_offset[0] - gamestart,
             ]
         ):
             dx, dy = move_offset

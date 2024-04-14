@@ -13,10 +13,12 @@ selected_level = 1
 ts1 = Tileset("assets/gen5.png")
 ts21 = Tileset("assets/underwater1.png", size=(16, 16))
 ts22 = Tileset("assets/underwater2.png", size=(16, 16))
+ts3 = Tileset("assets/swampy.png")
 ss = Tileset("assets/sprites.png", size=(16, 16))
 ts1.load()
 ts21.load()
 ts22.load()
+ts3.load()
 ss.load()
 
 
@@ -37,7 +39,7 @@ def maze(level):
     s_off = 0
     m = Maze(level, 70)
     map = None
-    if level == 1 or level == 3:
+    if level == 1:
         map = Tilemap(
             ts1,
             ts1,
@@ -67,6 +69,21 @@ def maze(level):
             size=(110, 110),
         )
         s_off = 1
+    elif level == 3:
+        map = Tilemap(
+            ts3,
+            ts3,
+            ts3,
+            "assets/BaseLayer3.npy",
+            "assets/TerrainLayer3.npy",
+            None,
+            m.cells,
+            m.sol_cells,
+            0,
+            3,
+            size=(110, 110),
+        )
+        s_off = 0
     sprite = s_off
     assert map is not None
     map.process_layers()

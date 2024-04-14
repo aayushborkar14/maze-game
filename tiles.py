@@ -50,8 +50,12 @@ class Tilemap:
         self.tileset2 = tileset2
         self.tileset3 = tileset3
         self.layer1 = np.load(base_layer)
-        self.layer2 = np.load(terrain_layer)
-        self.layer3 = np.load(top_layer)
+        self.layer2 = None
+        self.layer3 = None
+        if terrain_layer is not None:
+            self.layer2 = np.load(terrain_layer)
+        if top_layer is not None:
+            self.layer3 = np.load(top_layer)
         self.maze = maze_layer
         self.sol = sol_layer
         self.wall_tile = wall_tile
@@ -74,10 +78,10 @@ class Tilemap:
                 if self.layer1[i, j] != -1:
                     tile1 = self.tileset1.tiles[self.layer1[i, j]]
                     self.image.blit(tile1, (j * 32, i * 32))
-                if self.layer2[i, j] != -1:
+                if self.layer2 is not None and self.layer2[i, j] != -1:
                     tile2 = self.tileset2.tiles[self.layer2[i, j]]
                     self.image.blit(tile2, (j * 32, i * 32))
-                if self.layer3[i, j] != -1:
+                if self.layer3 is not None and self.layer3[i, j] != -1:
                     tile3 = self.tileset3.tiles[self.layer3[i, j]]
                     self.image.blit(tile3, (j * 32, i * 32))
                 if (

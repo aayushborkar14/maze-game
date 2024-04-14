@@ -10,14 +10,14 @@ screen = pygame.display.set_mode(size)
 running = True
 clock = pygame.time.Clock()
 selected_level = 1
-ts1 = Tileset("assets/gen5.png")
-ts21 = Tileset("assets/underwater1.png", size=(16, 16))
-ts22 = Tileset("assets/underwater2.png", size=(16, 16))
+ts2 = Tileset("assets/gen5.png")
+ts11 = Tileset("assets/underwater1.png", size=(16, 16))
+ts12 = Tileset("assets/underwater2.png", size=(16, 16))
 ts3 = Tileset("assets/swampy.png")
 ss = Tileset("assets/sprites.png", size=(16, 16))
-ts1.load()
-ts21.load()
-ts22.load()
+ts2.load()
+ts11.load()
+ts12.load()
 ts3.load()
 ss.load()
 
@@ -41,27 +41,12 @@ def maze(level):
     map = None
     if level == 1:
         map = Tilemap(
-            ts1,
-            ts1,
-            ts1,
+            ts11,
+            ts11,
+            ts12,
             "assets/BaseLayer1.npy",
             "assets/TerrainLayer1.npy",
             "assets/TopLayer1.npy",
-            m.cells,
-            m.sol_cells,
-            4109,
-            4378,
-            size=(110, 110),
-        )
-        s_off = 0
-    elif level == 2:
-        map = Tilemap(
-            ts21,
-            ts21,
-            ts22,
-            "assets/BaseLayer2.npy",
-            "assets/TerrainLayer2.npy",
-            "assets/TopLayer2.npy",
             m.cells,
             m.sol_cells,
             434,
@@ -69,6 +54,21 @@ def maze(level):
             size=(110, 110),
         )
         s_off = 1
+    elif level == 2:
+        map = Tilemap(
+            ts2,
+            ts2,
+            ts2,
+            "assets/BaseLayer2.npy",
+            "assets/TerrainLayer2.npy",
+            "assets/TopLayer2.npy",
+            m.cells,
+            m.sol_cells,
+            4109,
+            4378,
+            size=(110, 110),
+        )
+        s_off = 0
     elif level == 3:
         map = Tilemap(
             ts3,

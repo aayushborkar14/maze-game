@@ -5,9 +5,10 @@ from tiles import Tilemap, Tileset
 
 pygame.init()
 
-size = width, height = 960, 640
+size = width, height = 960, 800
 screen = pygame.display.set_mode(size)
 running = True
+score_rect = pygame.Rect(0, 640, 960, 160)
 clock = pygame.time.Clock()
 selected_level = 1
 ts2 = Tileset("assets/gen5.png")
@@ -190,9 +191,11 @@ def maze(level):
                         pygame.transform.flip(ss.tiles[sprite2], rflip, False),
                         (14 * 32, 9 * 32),
                     )
+                pygame.draw.rect(screen, (0, 0, 0), score_rect)
                 pygame.display.update()
                 clock.tick(60)  # limit the frame rate to 60 FPS
             player_pos = (player_pos[0] + dx, player_pos[1] + dy)
+        pygame.draw.rect(screen, (0, 0, 0), score_rect)
         pygame.display.update()
         clock.tick(60)  # limit the frame rate to 60 FPS
 

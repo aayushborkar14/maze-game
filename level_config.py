@@ -29,96 +29,78 @@ class LevelConfig:
             PowerUp.DUNGEON: self.box.tiles[0],
         }
 
-    def load_tiles(self):
-        self.ts2.load()
-        self.ts11.load()
-        self.ts12.load()
-        self.ts3.load()
-        self.box.load()
-
     def get_level_config(self, level):
+        map = None
         powerup_map = PowerUpMap(70, self.powerup_weights)
         maze = Maze(level, 70)
+        time = None
         if level == 1:
-            return (
-                Tilemap(
-                    self.ts11,
-                    self.ts11,
-                    self.ts12,
-                    "assets/BaseLayer1.npy",
-                    "assets/TerrainLayer1.npy",
-                    "assets/TopLayer1.npy",
-                    powerup_map.map,
-                    maze.cells,
-                    maze.sol_cells,
-                    434,
-                    90,
-                    self.powerup_tiles,
-                    size=(110, 110),
-                ),
-                maze,
-                powerup_map,
+            map = Tilemap(
+                self.ts11,
+                self.ts11,
+                self.ts12,
+                "assets/BaseLayer1.npy",
+                "assets/TerrainLayer1.npy",
+                "assets/TopLayer1.npy",
+                powerup_map.map,
+                maze.cells,
+                maze.sol_cells,
+                434,
+                90,
+                self.powerup_tiles,
+                size=(110, 110),
             )
-        if level == 2:
-            return (
-                Tilemap(
-                    self.ts2,
-                    self.ts2,
-                    self.ts2,
-                    "assets/BaseLayer2.npy",
-                    "assets/TerrainLayer2.npy",
-                    "assets/TopLayer2.npy",
-                    powerup_map.map,
-                    maze.cells,
-                    maze.sol_cells,
-                    4109,
-                    4378,
-                    self.powerup_tiles,
-                    size=(110, 110),
-                ),
-                maze,
-                powerup_map,
+            time = 180
+        elif level == 2:
+            map = Tilemap(
+                self.ts2,
+                self.ts2,
+                self.ts2,
+                "assets/BaseLayer2.npy",
+                "assets/TerrainLayer2.npy",
+                "assets/TopLayer2.npy",
+                powerup_map.map,
+                maze.cells,
+                maze.sol_cells,
+                4109,
+                4378,
+                self.powerup_tiles,
+                size=(110, 110),
             )
-        if level == 3:
-            return (
-                Tilemap(
-                    self.ts3,
-                    self.ts3,
-                    self.ts3,
-                    "assets/BaseLayer3.npy",
-                    "assets/TerrainLayer3.npy",
-                    None,
-                    powerup_map.map,
-                    maze.cells,
-                    maze.sol_cells,
-                    0,
-                    3,
-                    self.powerup_tiles,
-                    size=(110, 110),
-                ),
-                maze,
-                powerup_map,
+            time = 240
+        elif level == 3:
+            map = Tilemap(
+                self.ts3,
+                self.ts3,
+                self.ts3,
+                "assets/BaseLayer3.npy",
+                "assets/TerrainLayer3.npy",
+                None,
+                powerup_map.map,
+                maze.cells,
+                maze.sol_cells,
+                0,
+                3,
+                self.powerup_tiles,
+                size=(110, 110),
             )
-        if level == "cave":
+            time = 300
+        elif level == "cave":
             maze = Maze(1, 30)
-            return (
-                Tilemap(
-                    self.tsc,
-                    self.tsc,
-                    self.tsc,
-                    "assets/BaseLayerCave.npy",
-                    "assets/TerrainLayerCave.npy",
-                    None,
-                    None,
-                    maze.cells,
-                    maze.sol_cells,
-                    30,
-                    99,
-                    None,
-                    size=(70, 70),
-                    game=(30 - 1, 30 - 1),
-                ),
-                maze,
-                powerup_map,
+            map = Tilemap(
+                self.tsc,
+                self.tsc,
+                self.tsc,
+                "assets/BaseLayerCave.npy",
+                "assets/TerrainLayerCave.npy",
+                None,
+                None,
+                maze.cells,
+                maze.sol_cells,
+                30,
+                99,
+                None,
+                size=(70, 70),
+                game=(30 - 1, 30 - 1),
             )
-        return None, maze, powerup_map
+        return map, maze, powerup_map, time

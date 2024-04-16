@@ -6,14 +6,14 @@ from tiles import Tileset
 
 pygame.init()
 
-size = width, height = 960, 800
+size = width, height = 960, 720
 screen = pygame.display.set_mode(size)
 running = True
-score_rect = pygame.Rect(0, 640, 960, 160)
+score_rect = pygame.Rect(0, 640, 960, 80)
 clock = pygame.time.Clock()
 selected_level = 1
-ss = Tileset("assets/sprites.png", size=(16, 16))
-ss.load()
+player_sprite = Tileset("assets/sprites.png", size=(16, 16))
+player_sprite.load()
 dirs = ((1, 0), (0, 1), (-1, 0), (0, -1))
 
 
@@ -28,14 +28,20 @@ def render_text(text, size, color, x, y):
     return text, text_rect
 
 
+def manhattan_distance(a, b):
+    return abs(a[0] - b[0]) + abs(a[1] - b[1])
+
+
 def maze(level):
-    global running, ss, map
+    global running, player_sprite
     player_pos = (20, 20)
     s_off = 0
     config = LevelConfig()
-    map, maze, powerup_map = config.get_level_config(level)
+    map, maze, powerup_map, time = config.get_level_config(level)
     gamestart = 20
     gameend = 89
+    man_score = 0
+    collect_score = 0
     if level == 1:
         s_off = 1
     elif level == "cave":
@@ -46,6 +52,8 @@ def maze(level):
     pygame.key.set_repeat(150, 150)
     rflip = False
     sprite_facing = (0, 1)
+    clock = pygame.time.Clock()
+    pygame.time.set_timer(pygame.USEREVENT, 1000)
     while running:
         screen.blit(
             map.image,
@@ -58,7 +66,8 @@ def maze(level):
             ),
         )
         screen.blit(
-            pygame.transform.flip(ss.tiles[sprite], rflip, False), (14 * 32, 9 * 32)
+            pygame.transform.flip(player_sprite.tiles[sprite], rflip, False),
+            (14 * 32, 9 * 32),
         )
         move_offset = None
         sprite1 = 0
@@ -66,6 +75,9 @@ def maze(level):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
+            if event.type == pygame.USEREVENT:
+                if isinstance(time, int):
+                    time -= 1
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     pygame.key.set_repeat(0, 0)
@@ -144,19 +156,30 @@ def maze(level):
                 )
                 if i % 8:
                     screen.blit(
-                        pygame.transform.flip(ss.tiles[sprite1], rflip, False),
+                        pygame.transform.flip(
+                            player_sprite.tiles[sprite1], rflip, False
+                        ),
                         (14 * 32, 9 * 32),
                     )
                 else:
                     screen.blit(
-                        pygame.transform.flip(ss.tiles[sprite2], rflip, False),
+                        pygame.transform.flip(
+                            player_sprite.tiles[sprite2], rflip, False
+                        ),
                         (14 * 32, 9 * 32),
                     )
                 pygame.draw.rect(screen, (0, 0, 0), score_rect)
+                score = man_score + collect_score
+                render_text(f"Score: {score}", 30, "#ffffff", width / 4, 680)
+                render_text(f"Time: {time}", 30, "#ffffff", 3 * width / 4, 680)
                 pygame.display.update()
                 clock.tick(60)  # limit the frame rate to 60 FPS
             player_pos = (player_pos[0] + dx, player_pos[1] + dy)
         pygame.draw.rect(screen, (0, 0, 0), score_rect)
+        man_score = max(136 - manhattan_distance(player_pos, (88, 88)), man_score)
+        score = man_score + collect_score
+        render_text(f"Score: {score}", 30, "#ffffff", width / 4, 680)
+        render_text(f"Time: {time}", 30, "#ffffff", 3 * width / 4, 680)
         pygame.display.update()
         clock.tick(60)  # limit the frame rate to 60 FPS
 

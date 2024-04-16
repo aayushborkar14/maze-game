@@ -1,6 +1,7 @@
 import pygame
 
 from level_config import LevelConfig
+from powerup import PowerUp, PowerUpMap
 from tiles import Tileset
 
 pygame.init()
@@ -13,6 +14,7 @@ clock = pygame.time.Clock()
 selected_level = 1
 ss = Tileset("assets/sprites.png", size=(16, 16))
 ss.load()
+dirs = ((1, 0), (0, 1), (-1, 0), (0, -1))
 
 
 def font_with_size(size):
@@ -91,6 +93,26 @@ def maze(level):
                     sprite2 = 21 + s_off
                     rflip = True
                     move_offset = (1, 0)
+                if event.key == pygame.K_SPACE:
+                    for dx, dy in dirs:
+                        if (
+                            player_pos[0] - gamestart + dx < gameend
+                            and player_pos[1] - gamestart + dy < gameend
+                            and powerup_map.map[
+                                player_pos[1] - gamestart + dx,
+                                player_pos[0] - gamestart + dy,
+                            ]
+                            not in (0, PowerUp.EMPTY)
+                        ):
+                            map.remove_powerup(
+                                player_pos[1] + dx,
+                                player_pos[0] + dy,
+                            )
+                            powerup_map.map[
+                                player_pos[1] - gamestart + dx,
+                                player_pos[0] - gamestart + dy,
+                            ] = PowerUp.EMPTY
+                            break
         if (
             move_offset is not None
             and player_pos[0] + move_offset[0] >= gamestart

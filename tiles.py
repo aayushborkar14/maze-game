@@ -1,6 +1,8 @@
 import numpy as np
 import pygame
 
+from powerup import PowerUp
+
 
 class Tileset:
     def __init__(self, file, size=(32, 32), margin=0, spacing=0):
@@ -37,10 +39,12 @@ class Tilemap:
         base_layer,
         terrain_layer,
         top_layer,
+        powerup_map,
         maze_layer,
         sol_layer,
         wall_tile,
         sol_tile,
+        powerup_tiles,
         size=(110, 110),
         game=(70 - 1, 70 - 1),
         rect=None,
@@ -52,6 +56,7 @@ class Tilemap:
         self.layer1 = np.load(base_layer)
         self.layer2 = None
         self.layer3 = None
+        self.powerup_map = powerup_map
         if terrain_layer is not None:
             self.layer2 = np.load(terrain_layer)
         if top_layer is not None:
@@ -60,6 +65,7 @@ class Tilemap:
         self.sol = sol_layer
         self.wall_tile = wall_tile
         self.sol_tile = sol_tile
+        self.powerup_tiles = powerup_tiles
         self.gamestart = (size[0] - game[0]) // 2
         self.gameend = (size[0] + game[0]) // 2
 
@@ -91,6 +97,20 @@ class Tilemap:
                 ):
                     wall = self.tileset1.tiles[self.wall_tile]
                     self.image.blit(wall, (j * 32, i * 32))
+                if (
+                    self.powerup_map is not None
+                    and self.gamestart <= i < self.gameend
+                    and self.gamestart <= j < self.gameend
+                    and self.powerup_map[i - self.gamestart, j - self.gamestart]
+                    != PowerUp.EMPTY
+                    and self.powerup_map[i - self.gamestart, j - self.gamestart] != 0
+                ):
+                    self.image.blit(
+                        self.powerup_tiles[
+                            self.powerup_map[i - self.gamestart, j - self.gamestart]
+                        ],
+                        (j * 32, i * 32),
+                    )
         self.solimage = self.image.copy()
         soltile = self.tileset1.tiles[self.sol_tile]
         for i in range(self.gamestart, self.gameend):
@@ -99,3 +119,21 @@ class Tilemap:
                     self.solimage.blit(soltile, (j * 32, i * 32))
         pygame.image.save(self.solimage, "path.png")
         self.solimage = None
+
+    def remove_powerup(self, i, j):
+        if self.layer1[i, j] != -1:
+            tile1 = self.tileset1.tiles[self.layer1[i, j]]
+            self.image.blit(tile1, (j * 32, i * 32))
+        if self.layer2 is not None and self.layer2[i, j] != -1:
+            tile2 = self.tileset2.tiles[self.layer2[i, j]]
+            self.image.blit(tile2, (j * 32, i * 32))
+        if self.layer3 is not None and self.layer3[i, j] != -1:
+            tile3 = self.tileset3.tiles[self.layer3[i, j]]
+            self.image.blit(tile3, (j * 32, i * 32))
+        if (
+            self.gamestart <= i < self.gameend
+            and self.gamestart <= j < self.gameend
+            and self.maze[i - self.gamestart, j - self.gamestart]
+        ):
+            wall = self.tileset1.tiles[self.wall_tile]
+            self.image.blit(wall, (j * 32, i * 32))

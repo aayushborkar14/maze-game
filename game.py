@@ -1,7 +1,7 @@
 import pygame
 
-from maze import Maze
-from tiles import Tilemap, Tileset
+from level_config import LevelConfig
+from tiles import Tileset
 
 pygame.init()
 
@@ -11,16 +11,7 @@ running = True
 score_rect = pygame.Rect(0, 640, 960, 160)
 clock = pygame.time.Clock()
 selected_level = 1
-ts2 = Tileset("assets/gen5.png")
-ts11 = Tileset("assets/underwater1.png", size=(16, 16))
-ts12 = Tileset("assets/underwater2.png", size=(16, 16))
-ts3 = Tileset("assets/swampy.png")
-tsc = Tileset("assets/legacyadventure.png", size=(16, 16))
 ss = Tileset("assets/sprites.png", size=(16, 16))
-ts2.load()
-ts11.load()
-ts12.load()
-ts3.load()
 ss.load()
 
 
@@ -39,71 +30,13 @@ def maze(level):
     global running, ss, map
     player_pos = (20, 20)
     s_off = 0
-    m = Maze(level, 70)
-    map = None
+    config = LevelConfig()
+    map, maze, powerup_map = config.get_level_config(level)
     gamestart = 20
     gameend = 89
     if level == 1:
-        map = Tilemap(
-            ts11,
-            ts11,
-            ts12,
-            "assets/BaseLayer1.npy",
-            "assets/TerrainLayer1.npy",
-            "assets/TopLayer1.npy",
-            m.cells,
-            m.sol_cells,
-            434,
-            90,
-            size=(110, 110),
-        )
         s_off = 1
-    elif level == 2:
-        map = Tilemap(
-            ts2,
-            ts2,
-            ts2,
-            "assets/BaseLayer2.npy",
-            "assets/TerrainLayer2.npy",
-            "assets/TopLayer2.npy",
-            m.cells,
-            m.sol_cells,
-            4109,
-            4378,
-            size=(110, 110),
-        )
-        s_off = 0
-    elif level == 3:
-        map = Tilemap(
-            ts3,
-            ts3,
-            ts3,
-            "assets/BaseLayer3.npy",
-            "assets/TerrainLayer3.npy",
-            None,
-            m.cells,
-            m.sol_cells,
-            0,
-            3,
-            size=(110, 110),
-        )
-        s_off = 0
-    else:
-        m = Maze(level, 30)
-        map = Tilemap(
-            tsc,
-            tsc,
-            tsc,
-            "assets/BaseLayerCave.npy",
-            "assets/TerrainLayerCave.npy",
-            None,
-            m.cells,
-            m.sol_cells,
-            30,
-            99,
-            size=(70, 70),
-            game=(30 - 1, 30 - 1),
-        )
+    elif level == "cave":
         gameend = 49
     sprite = s_off
     assert map is not None
@@ -164,7 +97,7 @@ def maze(level):
             and player_pos[0] + move_offset[0] < gameend
             and player_pos[1] + move_offset[1] >= gamestart
             and player_pos[1] + move_offset[1] < gameend
-            and not m.cells[
+            and not maze.cells[
                 player_pos[1] + move_offset[1] - gamestart,
                 player_pos[0] + move_offset[0] - gamestart,
             ]

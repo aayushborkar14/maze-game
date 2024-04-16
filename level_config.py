@@ -37,7 +37,7 @@ class LevelConfig:
         self.box.load()
 
     def get_level_config(self, level):
-        pmap = PowerUpMap(70, self.powerup_weights)
+        powerup_map = PowerUpMap(70, self.powerup_weights)
         maze = Maze(level, 70)
         if level == 1:
             return (
@@ -48,7 +48,7 @@ class LevelConfig:
                     "assets/BaseLayer1.npy",
                     "assets/TerrainLayer1.npy",
                     "assets/TopLayer1.npy",
-                    pmap.map,
+                    powerup_map.map,
                     maze.cells,
                     maze.sol_cells,
                     434,
@@ -57,7 +57,7 @@ class LevelConfig:
                     size=(110, 110),
                 ),
                 maze,
-                pmap,
+                powerup_map,
             )
         if level == 2:
             return (
@@ -68,16 +68,16 @@ class LevelConfig:
                     "assets/BaseLayer2.npy",
                     "assets/TerrainLayer2.npy",
                     "assets/TopLayer2.npy",
-                    None,
+                    powerup_map.map,
                     maze.cells,
                     maze.sol_cells,
                     4109,
                     4378,
-                    None,
+                    self.powerup_tiles,
                     size=(110, 110),
                 ),
                 maze,
-                pmap,
+                powerup_map,
             )
         if level == 3:
             return (
@@ -88,16 +88,16 @@ class LevelConfig:
                     "assets/BaseLayer3.npy",
                     "assets/TerrainLayer3.npy",
                     None,
-                    None,
+                    powerup_map.map,
                     maze.cells,
                     maze.sol_cells,
                     0,
                     3,
-                    None,
+                    self.powerup_tiles,
                     size=(110, 110),
                 ),
                 maze,
-                pmap,
+                powerup_map,
             )
         if level == "cave":
             maze = Maze(1, 30)
@@ -119,6 +119,6 @@ class LevelConfig:
                     game=(30 - 1, 30 - 1),
                 ),
                 maze,
-                pmap,
+                powerup_map,
             )
-        return None, maze, pmap
+        return None, maze, powerup_map

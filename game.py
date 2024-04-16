@@ -1,7 +1,7 @@
 import pygame
 
 from level_config import LevelConfig
-from powerup import PowerUp, PowerUpMap
+from powerup import PowerUp
 from tiles import Tileset
 
 pygame.init()
@@ -45,6 +45,7 @@ def maze(level):
     map.process_layers()
     pygame.key.set_repeat(150, 150)
     rflip = False
+    sprite_facing = (0, 1)
     while running:
         screen.blit(
             map.image,
@@ -75,24 +76,28 @@ def maze(level):
                     sprite2 = 24 + s_off
                     rflip = False
                     move_offset = (0, -1)
+                    sprite_facing = (0, -1)
                 if event.key == pygame.K_DOWN:
                     sprite = 0 + s_off
                     sprite1 = 9 + s_off
                     sprite2 = 18 + s_off
                     rflip = False
                     move_offset = (0, 1)
+                    sprite_facing = (0, 1)
                 if event.key == pygame.K_LEFT:
                     sprite = 3 + s_off
                     sprite1 = 12 + s_off
                     sprite2 = 21 + s_off
                     rflip = False
                     move_offset = (-1, 0)
+                    sprite_facing = (-1, 0)
                 if event.key == pygame.K_RIGHT:
                     sprite = 3 + s_off
                     sprite1 = 12 + s_off
                     sprite2 = 21 + s_off
                     rflip = True
                     move_offset = (1, 0)
+                    sprite_facing = (1, 0)
                 if event.key == pygame.K_SPACE:
                     for dx, dy in dirs:
                         if (
@@ -103,6 +108,7 @@ def maze(level):
                                 player_pos[0] - gamestart + dy,
                             ]
                             not in (0, PowerUp.EMPTY)
+                            and (dy, dx) == sprite_facing
                         ):
                             map.remove_powerup(
                                 player_pos[1] + dx,

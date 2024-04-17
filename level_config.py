@@ -22,8 +22,9 @@ class LevelConfig:
 
         self.powerup_weights = {
             PowerUp.EMPTY: 0.95,
-            PowerUp.SCORE_GAIN: 0.025,
-            PowerUp.TIME_GAIN: 0.025,
+            PowerUp.SCORE_GAIN: 0.017,
+            PowerUp.TIME_GAIN: 0.017,
+            PowerUp.DUNGEON: 0.016,
         }
         self.powerup_tiles = {
             PowerUp.EMPTY: self.box.tiles[0],

@@ -15,6 +15,7 @@ selected_level = 1
 player_sprite = Tileset("assets/sprites.png", size=(16, 16))
 player_sprite.load()
 dirs = ((1, 0), (0, 1), (-1, 0), (0, -1))
+game_state = None
 
 
 def font_with_size(size):
@@ -32,16 +33,28 @@ def manhattan_distance(a, b):
     return abs(a[0] - b[0]) + abs(a[1] - b[1])
 
 
-def maze(level):
+def maze(level, maze_state=None):
     global running, player_sprite
-    player_pos = (20, 20)
+    if maze_state is not None:
+        player_pos = maze_state["player_pos"]
+        man_score = maze_state["man_score"]
+        collect_score = maze_state["collect_score"]
+        map = maze_state["map"]
+        maze = maze_state["maze"]
+        if "powerup_map" in maze_state:
+            powerup_map = maze_state["powerup_map"]
+        else:
+            powerup_map = None
+        time = maze_state["time"]
+    else:
+        player_pos = (20, 20)
+        man_score = 0
+        collect_score = 0
+        config = LevelConfig()
+        map, maze, powerup_map, time = config.get_level_config(level)
     s_off = 0
-    config = LevelConfig()
-    map, maze, powerup_map, time = config.get_level_config(level)
     gamestart = 20
     gameend = 89
-    man_score = 0
-    collect_score = 0
     if level == 1:
         s_off = 1
     elif level == "cave":
@@ -88,35 +101,35 @@ def maze(level):
                 if event.key == pygame.K_ESCAPE:
                     pygame.key.set_repeat(0, 0)
                     return menu()
-                if event.key == pygame.K_UP:
+                if event.key in (pygame.K_UP, pygame.K_w):
                     sprite = 6 + s_off
                     sprite1 = 15 + s_off
                     sprite2 = 24 + s_off
                     rflip = False
                     move_offset = (0, -1)
                     sprite_facing = (0, -1)
-                if event.key == pygame.K_DOWN:
+                if event.key in (pygame.K_DOWN, pygame.K_s):
                     sprite = 0 + s_off
                     sprite1 = 9 + s_off
                     sprite2 = 18 + s_off
                     rflip = False
                     move_offset = (0, 1)
                     sprite_facing = (0, 1)
-                if event.key == pygame.K_LEFT:
+                if event.key in (pygame.K_LEFT, pygame.K_a):
                     sprite = 3 + s_off
                     sprite1 = 12 + s_off
                     sprite2 = 21 + s_off
                     rflip = False
                     move_offset = (-1, 0)
                     sprite_facing = (-1, 0)
-                if event.key == pygame.K_RIGHT:
+                if event.key in (pygame.K_RIGHT, pygame.K_d):
                     sprite = 3 + s_off
                     sprite1 = 12 + s_off
                     sprite2 = 21 + s_off
                     rflip = True
                     move_offset = (1, 0)
                     sprite_facing = (1, 0)
-                if event.key == pygame.K_SPACE:
+                if event.key == pygame.K_SPACE and powerup_map is not None:
                     for dx, dy in dirs:
                         if (
                             player_pos[0] - gamestart + dx < gameend

@@ -54,6 +54,8 @@ def maze(level):
     sprite_facing = (0, 1)
     clock = pygame.time.Clock()
     pygame.time.set_timer(pygame.USEREVENT, 1000)
+    score_plus_left = 0
+    time_plus_left = 0
     while running:
         screen.blit(
             map.image,
@@ -78,6 +80,10 @@ def maze(level):
             if event.type == pygame.USEREVENT:
                 if isinstance(time, int):
                     time -= 1
+                    if score_plus_left:
+                        score_plus_left -= 1
+                    if time_plus_left:
+                        time_plus_left -= 1
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     pygame.key.set_repeat(0, 0)
@@ -122,6 +128,25 @@ def maze(level):
                             not in (0, PowerUp.EMPTY)
                             and (dy, dx) == sprite_facing
                         ):
+                            if (
+                                powerup_map.map[
+                                    player_pos[1] - gamestart + dx,
+                                    player_pos[0] - gamestart + dy,
+                                ]
+                                == PowerUp.SCORE_GAIN
+                            ):
+                                collect_score += 100
+                                score_plus_left = 2
+                            elif (
+                                powerup_map.map[
+                                    player_pos[1] - gamestart + dx,
+                                    player_pos[0] - gamestart + dy,
+                                ]
+                                == PowerUp.TIME_GAIN
+                            ):
+                                if isinstance(time, int):
+                                    time += 10
+                                time_plus_left = 2
                             map.remove_powerup(
                                 player_pos[1] + dx,
                                 player_pos[0] + dy,
@@ -172,14 +197,24 @@ def maze(level):
                 score = man_score + collect_score
                 render_text(f"Score: {score}", 30, "#ffffff", width / 4, 680)
                 render_text(f"Time: {time}", 30, "#ffffff", 3 * width / 4, 680)
+                if score_plus_left:
+                    render_text("+100", 30, "#00ff00", 3 * width / 8, 680)
+                if time_plus_left:
+                    render_text("+10", 30, "#00ff00", 7 * width / 8, 680)
                 pygame.display.update()
                 clock.tick(60)  # limit the frame rate to 60 FPS
             player_pos = (player_pos[0] + dx, player_pos[1] + dy)
         pygame.draw.rect(screen, (0, 0, 0), score_rect)
-        man_score = max(136 - manhattan_distance(player_pos, (88, 88)), man_score)
+        man_score = max(
+            int((136 - manhattan_distance(player_pos, (88, 88))) ** 2), man_score
+        )
         score = man_score + collect_score
         render_text(f"Score: {score}", 30, "#ffffff", width / 4, 680)
         render_text(f"Time: {time}", 30, "#ffffff", 3 * width / 4, 680)
+        if score_plus_left:
+            render_text("+100", 30, "#00ff00", 3 * width / 8, 680)
+        if time_plus_left:
+            render_text("+10", 30, "#00ff00", 7 * width / 8, 680)
         pygame.display.update()
         clock.tick(60)  # limit the frame rate to 60 FPS
 

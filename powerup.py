@@ -8,9 +8,10 @@ class PowerUp(IntEnum):
     EMPTY = auto()
     SCORE_GAIN = auto()
     TIME_GAIN = auto()
+    JUMP = auto()
     SCORE_LOSS = auto()
     TIME_LOSS = auto()
-    DUNGEON = auto()
+    CAVE_VENT = auto()
 
 
 class PowerUpMap:

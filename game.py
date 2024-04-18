@@ -15,7 +15,8 @@ selected_level = 1
 player_sprite = Tileset("assets/sprites.png", size=(16, 16))
 player_sprite.load()
 dirs = ((1, 0), (0, 1), (-1, 0), (0, -1))
-game_state = None
+gamestate = None
+gamelevel = 1
 
 
 def font_with_size(size):
@@ -33,19 +34,27 @@ def manhattan_distance(a, b):
     return abs(a[0] - b[0]) + abs(a[1] - b[1])
 
 
-def maze(level, maze_state=None):
-    global running, player_sprite
+def maze_game(level, maze_state=None):
+    global running, player_sprite, gamestate, gamelevel
     if maze_state is not None:
-        player_pos = maze_state["player_pos"]
+        if "player_pos" in maze_state:
+            player_pos = maze_state["player_pos"]
+        else:
+            player_pos = (20, 20)
         man_score = maze_state["man_score"]
         collect_score = maze_state["collect_score"]
-        map = maze_state["map"]
-        maze = maze_state["maze"]
-        if "powerup_map" in maze_state:
-            powerup_map = maze_state["powerup_map"]
+        if "map" in maze_state:
+            map = maze_state["map"]
+            maze = maze_state["maze"]
+            if "powerup_map" in maze_state:
+                powerup_map = maze_state["powerup_map"]
+            else:
+                powerup_map = None
         else:
-            powerup_map = None
-        time = maze_state["time"]
+            config = LevelConfig()
+            map, maze, powerup_map, time = config.get_level_config(level)
+        if "time" in maze_state:
+            time = maze_state["time"]
     else:
         player_pos = (20, 20)
         man_score = 0
@@ -70,6 +79,9 @@ def maze(level, maze_state=None):
     score_plus_left = 0
     time_plus_left = 0
     while running:
+        if player_pos == (gameend - 1, gameend - 1):
+            if level == "cave":
+                return maze_game(gamelevel, gamestate)
         screen.blit(
             map.image,
             map.rect,
@@ -160,6 +172,52 @@ def maze(level, maze_state=None):
                                 if isinstance(time, int):
                                     time += 10
                                 time_plus_left = 2
+                            elif (
+                                powerup_map.map[
+                                    player_pos[1] - gamestart + dx,
+                                    player_pos[0] - gamestart + dy,
+                                ]
+                                == PowerUp.JUMP
+                            ):
+                                pass
+                            elif (
+                                powerup_map.map[
+                                    player_pos[1] - gamestart + dx,
+                                    player_pos[0] - gamestart + dy,
+                                ]
+                                == PowerUp.CAVE_VENT
+                            ):
+                                gamelevel = level
+                                md0 = manhattan_distance(
+                                    player_pos, (gamestart, gamestart)
+                                )
+                                md_exit = md0 + 28
+                                exit_pos = player_pos
+                                for i in range(0, gameend - gamestart):
+                                    for j in range(0, gameend - gamestart):
+                                        if (
+                                            not maze.sol_cells[i, j]
+                                            and manhattan_distance((0, 0), (i, j))
+                                            == md_exit
+                                        ):
+                                            exit_pos = (j + gamestart, i + gamestart)
+                                gamestate = {
+                                    "player_pos": exit_pos,
+                                    "man_score": man_score,
+                                    "collect_score": collect_score,
+                                    "map": map,
+                                    "maze": maze,
+                                    "powerup_map": powerup_map,
+                                    "time": time,
+                                }
+                                return maze_game(
+                                    "cave",
+                                    {
+                                        "man_score": man_score,
+                                        "collect_score": collect_score,
+                                        "time": time,
+                                    },
+                                )
                             map.remove_powerup(
                                 player_pos[1] + dx,
                                 player_pos[0] + dy,
@@ -259,22 +317,22 @@ def menu():
         if easy_rect.collidepoint(pygame.mouse.get_pos()):
             selected_level = 1
             if pygame.mouse.get_pressed()[0]:
-                return maze(1)
+                return maze_game(1)
         if medium_rect.collidepoint(pygame.mouse.get_pos()):
             selected_level = 2
             if pygame.mouse.get_pressed()[0]:
-                return maze(2)
+                return maze_game(2)
         if hard_rect.collidepoint(pygame.mouse.get_pos()):
             selected_level = 3
             if pygame.mouse.get_pressed()[0]:
-                return maze(3)
+                return maze_game(3)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_RETURN:
-                    return maze(selected_level)
+                    return maze_game(selected_level)
                 if event.key == pygame.K_UP:
                     selected_level = max(1, selected_level - 1)
                 if event.key == pygame.K_DOWN:

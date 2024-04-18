@@ -17,22 +17,23 @@ class LevelConfig:
             PowerUp.TIME_GAIN: 0.01,
             PowerUp.SCORE_LOSS: 0.01,
             PowerUp.TIME_LOSS: 0.01,
-            PowerUp.DUNGEON: 0.01,
+            PowerUp.CAVE_VENT: 0.01,
         }
 
         self.powerup_weights = {
             PowerUp.EMPTY: 0.95,
-            PowerUp.SCORE_GAIN: 0.017,
-            PowerUp.TIME_GAIN: 0.017,
-            PowerUp.DUNGEON: 0.016,
+            PowerUp.SCORE_GAIN: 0.005,
+            PowerUp.TIME_GAIN: 0.005,
+            PowerUp.CAVE_VENT: 0.04,
         }
         self.powerup_tiles = {
             PowerUp.EMPTY: self.box.tiles[0],
             PowerUp.SCORE_GAIN: self.box.tiles[0],
             PowerUp.TIME_GAIN: self.box.tiles[0],
+            PowerUp.JUMP: self.box.tiles[0],
             PowerUp.SCORE_LOSS: self.box.tiles[0],
             PowerUp.TIME_LOSS: self.box.tiles[0],
-            PowerUp.DUNGEON: self.box.tiles[0],
+            PowerUp.CAVE_VENT: self.box.tiles[0],
         }
 
     def get_level_config(self, level):

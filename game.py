@@ -76,6 +76,34 @@ def maze_game(level, maze_state=None):
     pygame.time.set_timer(pygame.USEREVENT, 1000)
     score_plus_left = 0
     time_plus_left = 0
+    black_surface = pygame.Surface((screen.get_width(), screen.get_height())).convert()
+    black_surface.fill((0, 0, 0))
+    for i in range(31, 0, -1):
+        black_surface.set_alpha(i * 8)
+        screen.blit(
+            map.image,
+            map.rect,
+            (
+                32 * (player_pos[0] - 14),
+                32 * (player_pos[1] - 9),
+                32 * (player_pos[0] + 15),
+                32 * (player_pos[1] + 10),
+            ),
+        )
+        screen.blit(
+            pygame.transform.flip(player_sprite.tiles[sprite], rflip, False),
+            (14 * 32, 9 * 32),
+        )
+        pygame.draw.rect(screen, (0, 0, 0), score_rect)
+        man_score = max(
+            int((136 - manhattan_distance(player_pos, (88, 88))) ** 2), man_score
+        )
+        score = man_score + collect_score
+        render_text(f"Score: {score}", 30, "#ffffff", width / 4, 680)
+        render_text(f"Time: {time}", 30, "#ffffff", 3 * width / 4, 680)
+        screen.blit(black_surface, (0, 0))
+        pygame.display.update()
+        clock.tick(60)
     while running:
         if player_pos == (gameend - 1, gameend - 1):
             if level == "cave":
@@ -210,6 +238,18 @@ def maze_game(level, maze_state=None):
                                     "powerup_map": powerup_map,
                                     "time": time,
                                 }
+                                black_surface = pygame.Surface(
+                                    (
+                                        screen.get_width(),
+                                        screen.get_height(),
+                                    )
+                                ).convert()
+                                black_surface.fill((0, 0, 0))
+                                for i in range(32):
+                                    black_surface.set_alpha(i * 8)
+                                    screen.blit(black_surface, (0, 0))
+                                    pygame.display.update()
+                                    clock.tick(60)
                                 return maze_game(
                                     "cave",
                                     {

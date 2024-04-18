@@ -353,8 +353,8 @@ def game_end(score, completed, level):
     if os.path.isfile(f"highscores{level}.txt"):
         with open(f"highscores{level}.txt", "r") as f:
             for line in f:
-                if line.isdigit():
-                    scores.append(int(line))
+                if line.strip().isdigit():
+                    scores.append(int(line.strip()))
         scores.append(score)
         with open(f"highscores{level}.txt", "w+") as f:
             for i, score in enumerate(sorted(scores, reverse=True)):

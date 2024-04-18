@@ -384,8 +384,10 @@ def game_end(score, completed, level):
             leaderboard_color = "#ff0000"
         else:
             home_color = "#ff0000"
-        render_text("View Leaderboard", 50, leaderboard_color, width / 2, 300)
-        render_text("Go back home", 50, home_color, width / 2, 400)
+        render_text("View Leaderboard", 50, leaderboard_color, width / 2, 400)
+        render_text("Go back home", 50, home_color, width / 2, 500)
+        render_text("Press Esc to go back", 30, "#ffffff", width / 2, 600)
+        render_text("Press Enter to continue", 30, "#ffffff", width / 2, 650)
         pygame.display.update()
         clock.tick(60)
         for event in pygame.event.get():
@@ -445,8 +447,8 @@ def leaderboard(level):
     if os.path.isfile(f"highscores{level}.txt"):
         with open(f"highscores{level}.txt", "r") as f:
             for line in f:
-                if line.isdigit():
-                    scores.append(int(line))
+                if line.strip().isdigit():
+                    scores.append(int(line.strip()))
     while running:
         screen.fill((0, 0, 0))
         render_text("Leaderboard", 100, "#ffffff", width / 2, 100)
@@ -494,8 +496,8 @@ def menu():
             "Leaderboard", 50, leaderboard_color, width / 2, 475
         )
 
-        render_text("Press Enter to start", 30, "#ffffff", width / 2, 550)
         render_text("Press Esc to exit", 30, "#ffffff", width / 2, 600)
+        render_text("Press Enter to continue", 30, "#ffffff", width / 2, 650)
 
         if easy_rect.collidepoint(pygame.mouse.get_pos()):
             selected_level = 1

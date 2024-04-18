@@ -11,20 +11,12 @@ class LevelConfig:
         self.ts3 = Tileset("assets/swampy.png")
         self.tsc = Tileset("assets/legacyadventure.png", size=(16, 16))
         self.box = Tileset("assets/itembox.png", size=(252, 252))
+        self.vent = Tileset("assets/vent.png")
         self.powerup_weights = {
             PowerUp.EMPTY: 0.95,
-            PowerUp.SCORE_GAIN: 0.01,
-            PowerUp.TIME_GAIN: 0.01,
-            PowerUp.SCORE_LOSS: 0.01,
-            PowerUp.TIME_LOSS: 0.01,
+            PowerUp.SCORE_GAIN: 0.02,
+            PowerUp.TIME_GAIN: 0.02,
             PowerUp.CAVE_VENT: 0.01,
-        }
-
-        self.powerup_weights = {
-            PowerUp.EMPTY: 0.95,
-            PowerUp.SCORE_GAIN: 0.005,
-            PowerUp.TIME_GAIN: 0.005,
-            PowerUp.CAVE_VENT: 0.04,
         }
         self.powerup_tiles = {
             PowerUp.EMPTY: self.box.tiles[0],
@@ -33,7 +25,7 @@ class LevelConfig:
             PowerUp.JUMP: self.box.tiles[0],
             PowerUp.SCORE_LOSS: self.box.tiles[0],
             PowerUp.TIME_LOSS: self.box.tiles[0],
-            PowerUp.CAVE_VENT: self.box.tiles[0],
+            PowerUp.CAVE_VENT: self.vent.tiles[0],
         }
 
     def get_level_config(self, level):

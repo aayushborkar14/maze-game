@@ -2,6 +2,9 @@
 path.png
 path.txt
 
+# Leaderboard
+highscores*
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

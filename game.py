@@ -1,3 +1,5 @@
+import os
+
 import pygame
 
 from level_config import LevelConfig
@@ -106,10 +108,23 @@ def maze_game(level, maze_state=None):
         clock.tick(60)
     while running:
         if player_pos == (gameend - 1, gameend - 1):
+            black_surface = pygame.Surface(
+                (
+                    screen.get_width(),
+                    screen.get_height(),
+                )
+            ).convert()
+            black_surface.fill((0, 0, 0))
+            for i in range(32):
+                black_surface.set_alpha(i * 8)
+                screen.blit(black_surface, (0, 0))
+                pygame.display.update()
+                clock.tick(60)
             if level == "cave":
                 assert gamestate is not None
                 gamestate["time"] = time
                 return maze_game(gamelevel, gamestate)
+            return game_end(score, True, level)
         screen.blit(
             map.image,
             map.rect,
@@ -133,6 +148,8 @@ def maze_game(level, maze_state=None):
             if event.type == pygame.USEREVENT:
                 if isinstance(time, int):
                     time -= 1
+                    if time < 0:
+                        return game_end(score, False, level)
                     if score_plus_left:
                         score_plus_left -= 1
                     if time_plus_left:
@@ -330,6 +347,127 @@ def maze_game(level, maze_state=None):
         clock.tick(60)  # limit the frame rate to 60 FPS
 
 
+def game_end(score, completed, level):
+    global running
+    scores = []
+    if os.path.isfile(f"highscores{level}.txt"):
+        with open(f"highscores{level}.txt", "r") as f:
+            for line in f:
+                if line.isdigit():
+                    scores.append(int(line))
+        scores.append(score)
+        with open(f"highscores{level}.txt", "w+") as f:
+            for i, score in enumerate(sorted(scores, reverse=True)):
+                if i >= 10:
+                    break
+                f.write(f"{score}\n")
+    else:
+        scores.append(score)
+        with open(f"highscores{level}.txt", "w") as f:
+            f.write(f"{score}\n")
+    selected_option = 0
+    score_count = 0
+    for s in scores:
+        if s == score:
+            score_count += 1
+    while running:
+        screen.fill((0, 0, 0))
+        if completed:
+            render_text("Level Completed", 100, "#ffffff", width / 2, 100)
+        else:
+            render_text("Game Over", 100, "#ffffff", width / 2, 100)
+        render_text(f"Score: {score}", 50, "#ffffff", width / 2, 200)
+        if score == max(scores) and score_count == 1:
+            render_text("New High Score!", 50, "#ffff00", width / 2, 250)
+        leaderboard_color = home_color = "#ffffff"
+        if selected_option == 0:
+            leaderboard_color = "#ff0000"
+        else:
+            home_color = "#ff0000"
+        render_text("View Leaderboard", 50, leaderboard_color, width / 2, 300)
+        render_text("Go back home", 50, home_color, width / 2, 400)
+        pygame.display.update()
+        clock.tick(60)
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_RETURN:
+                    if selected_option == 1:
+                        return menu()
+                    else:
+                        leaderboard(level)
+                if event.key == pygame.K_UP:
+                    selected_option = 0
+                if event.key == pygame.K_DOWN:
+                    selected_option = 1
+                if event.key == pygame.K_ESCAPE:
+                    return menu()
+
+
+def leaderboard_selector():
+    global running, selected_level
+    selected_level = 1
+    while running:
+        easy_color = medium_color = hard_color = "#ffffff"
+        if selected_level == 1:
+            easy_color = "#ff0000"
+        elif selected_level == 2:
+            medium_color = "#ff0000"
+        elif selected_level == 3:
+            hard_color = "#ff0000"
+        screen.fill((0, 0, 0))
+        render_text("Select a level", 100, "#ffffff", width / 2, 100)
+        render_text("Easy", 50, easy_color, width / 2, 200)
+        render_text("Medium", 50, medium_color, width / 2, 300)
+        render_text("Hard", 50, hard_color, width / 2, 400)
+        render_text("Press Esc to go back", 30, "#ffffff", width / 2, 600)
+        render_text("Press Enter to continue", 30, "#ffffff", width / 2, 650)
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_RETURN:
+                    leaderboard(selected_level)
+                if event.key == pygame.K_UP:
+                    selected_level = max(selected_level - 1, 1)
+                if event.key == pygame.K_DOWN:
+                    selected_level = min(selected_level + 1, 3)
+                if event.key == pygame.K_ESCAPE:
+                    return menu()
+        pygame.display.update()
+        clock.tick(60)
+
+
+def leaderboard(level):
+    global running
+    scores = []
+    if os.path.isfile(f"highscores{level}.txt"):
+        with open(f"highscores{level}.txt", "r") as f:
+            for line in f:
+                if line.isdigit():
+                    scores.append(int(line))
+    while running:
+        screen.fill((0, 0, 0))
+        render_text("Leaderboard", 100, "#ffffff", width / 2, 100)
+        if scores:
+            for i, score in enumerate(sorted(scores, reverse=True)):
+                if i >= 10:
+                    break
+                render_text(f"{i + 1}. {score}", 50, "#ffffff", width / 2, 200 + i * 50)
+        else:
+            render_text("No scores yet", 50, "#ffffff", width / 2, 200)
+        render_text("Press Esc to go back", 30, "#ffffff", width / 2, 600)
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    return
+        pygame.display.update()
+        clock.tick(60)
+
+
 def menu():
     global running, selected_level
     pygame.display.set_caption("Main Menu")
@@ -339,20 +477,25 @@ def menu():
         menu_title = font_with_size(100).render("Choose a Level", True, "#ffffff")
         menu_rect = menu_title.get_rect(center=(width / 2, 100))
         screen.blit(menu_title, menu_rect)
-        easy_color = medium_color = hard_color = "#ffffff"
+        easy_color = medium_color = hard_color = leaderboard_color = "#ffffff"
         if selected_level == 1:
             easy_color = "#ff0000"
         elif selected_level == 2:
             medium_color = "#ff0000"
         elif selected_level == 3:
             hard_color = "#ff0000"
+        elif selected_level == 4:
+            leaderboard_color = "#ff0000"
 
         _, easy_rect = render_text("Easy", 50, easy_color, width / 2, 250)
         _, medium_rect = render_text("Medium", 50, medium_color, width / 2, 325)
         _, hard_rect = render_text("Hard", 50, hard_color, width / 2, 400)
+        _, leaderboard_rect = render_text(
+            "Leaderboard", 50, leaderboard_color, width / 2, 475
+        )
 
-        render_text("Press Enter to start", 30, "#ffffff", width / 2, 500)
-        render_text("Press Esc to exit", 30, "#ffffff", width / 2, 550)
+        render_text("Press Enter to start", 30, "#ffffff", width / 2, 550)
+        render_text("Press Esc to exit", 30, "#ffffff", width / 2, 600)
 
         if easy_rect.collidepoint(pygame.mouse.get_pos()):
             selected_level = 1
@@ -366,17 +509,23 @@ def menu():
             selected_level = 3
             if pygame.mouse.get_pressed()[0]:
                 return maze_game(3)
+        if leaderboard_rect.collidepoint(pygame.mouse.get_pos()):
+            selected_level = 4
+            if pygame.mouse.get_pressed()[0]:
+                return leaderboard_selector()
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_RETURN:
+                    if selected_level == 4:
+                        return leaderboard_selector()
                     return maze_game(selected_level)
                 if event.key == pygame.K_UP:
                     selected_level = max(1, selected_level - 1)
                 if event.key == pygame.K_DOWN:
-                    selected_level = min(3, selected_level + 1)
+                    selected_level = min(4, selected_level + 1)
                 if event.key == pygame.K_ESCAPE:
                     running = False
 

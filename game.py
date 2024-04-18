@@ -51,16 +51,14 @@ def maze_game(level, maze_state=None):
             else:
                 powerup_map = None
         else:
-            config = LevelConfig()
-            map, maze, powerup_map, time = config.get_level_config(level)
+            map, maze, powerup_map, time = LevelConfig().get_level_config(level)
         if "time" in maze_state:
             time = maze_state["time"]
     else:
         player_pos = (20, 20)
         man_score = 0
         collect_score = 0
-        config = LevelConfig()
-        map, maze, powerup_map, time = config.get_level_config(level)
+        map, maze, powerup_map, time = LevelConfig().get_level_config(level)
     s_off = 0
     gamestart = 20
     gameend = 89
@@ -81,6 +79,8 @@ def maze_game(level, maze_state=None):
     while running:
         if player_pos == (gameend - 1, gameend - 1):
             if level == "cave":
+                assert gamestate is not None
+                gamestate["time"] = time
                 return maze_game(gamelevel, gamestate)
         screen.blit(
             map.image,

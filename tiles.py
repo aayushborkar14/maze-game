@@ -95,7 +95,10 @@ class Tilemap:
                     and self.gamestart <= j < self.gameend
                     and self.maze[i - self.gamestart, j - self.gamestart]
                 ):
-                    wall = self.tileset1.tiles[self.wall_tile]
+                    if isinstance(self.wall_tile, int):
+                        wall = self.tileset1.tiles[self.wall_tile]
+                    else:
+                        wall = self.tileset1.tiles[np.random.choice(self.wall_tile)]
                     self.image.blit(wall, (j * 32, i * 32))
                 if (
                     self.powerup_map is not None

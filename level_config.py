@@ -9,7 +9,7 @@ class LevelConfig:
         self.ts11 = Tileset("assets/underwater1.png", size=(16, 16))
         self.ts12 = Tileset("assets/underwater2.png", size=(16, 16))
         self.ts3 = Tileset("assets/swampy.png")
-        self.tsc = Tileset("assets/legacyadventure.png", size=(16, 16))
+        self.tsc = Tileset("assets/cavetiles.png")
         self.box = Tileset("assets/itembox.png", size=(252, 252))
         self.vent = Tileset("assets/vent.png")
         self.powerup_weights = {
@@ -91,13 +91,13 @@ class LevelConfig:
                 self.tsc,
                 self.tsc,
                 "assets/BaseLayerCave.npy",
-                "assets/TerrainLayerCave.npy",
+                None,
                 None,
                 None,
                 maze.cells,
                 maze.sol_cells,
-                30,
-                99,
+                1,
+                3,
                 None,
                 size=(70, 70),
                 game=(30 - 1, 30 - 1),

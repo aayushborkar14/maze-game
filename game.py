@@ -80,6 +80,7 @@ def maze_game(level, maze_state=None):
     time_plus_left = 0
     black_surface = pygame.Surface((screen.get_width(), screen.get_height())).convert()
     black_surface.fill((0, 0, 0))
+    jumping = False
     for i in range(31, 0, -1):
         black_surface.set_alpha(i * 8)
         screen.blit(
@@ -154,136 +155,189 @@ def maze_game(level, maze_state=None):
                         score_plus_left -= 1
                     if time_plus_left:
                         time_plus_left -= 1
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_ESCAPE:
-                    pygame.key.set_repeat(0, 0)
-                    return menu()
-                if event.key in (pygame.K_UP, pygame.K_w):
-                    sprite = 6 + s_off
-                    sprite1 = 15 + s_off
-                    sprite2 = 24 + s_off
-                    rflip = False
-                    move_offset = (0, -1)
-                    sprite_facing = (0, -1)
-                if event.key in (pygame.K_DOWN, pygame.K_s):
-                    sprite = 0 + s_off
-                    sprite1 = 9 + s_off
-                    sprite2 = 18 + s_off
-                    rflip = False
-                    move_offset = (0, 1)
-                    sprite_facing = (0, 1)
-                if event.key in (pygame.K_LEFT, pygame.K_a):
-                    sprite = 3 + s_off
-                    sprite1 = 12 + s_off
-                    sprite2 = 21 + s_off
-                    rflip = False
-                    move_offset = (-1, 0)
-                    sprite_facing = (-1, 0)
-                if event.key in (pygame.K_RIGHT, pygame.K_d):
-                    sprite = 3 + s_off
-                    sprite1 = 12 + s_off
-                    sprite2 = 21 + s_off
-                    rflip = True
-                    move_offset = (1, 0)
-                    sprite_facing = (1, 0)
-                if event.key == pygame.K_SPACE and powerup_map is not None:
-                    for dx, dy in dirs:
-                        if (
-                            player_pos[0] - gamestart + dx < gameend
-                            and player_pos[1] - gamestart + dy < gameend
-                            and powerup_map.map[
-                                player_pos[1] - gamestart + dx,
-                                player_pos[0] - gamestart + dy,
-                            ]
-                            not in (0, PowerUp.EMPTY)
-                            and (dy, dx) == sprite_facing
-                        ):
-                            if (
-                                powerup_map.map[
-                                    player_pos[1] - gamestart + dx,
-                                    player_pos[0] - gamestart + dy,
-                                ]
-                                == PowerUp.SCORE_GAIN
-                            ):
-                                collect_score += 100
-                                score_plus_left = 2
-                            elif (
-                                powerup_map.map[
-                                    player_pos[1] - gamestart + dx,
-                                    player_pos[0] - gamestart + dy,
-                                ]
-                                == PowerUp.TIME_GAIN
-                            ):
-                                if isinstance(time, int):
-                                    time += 10
-                                time_plus_left = 2
-                            elif (
-                                powerup_map.map[
-                                    player_pos[1] - gamestart + dx,
-                                    player_pos[0] - gamestart + dy,
-                                ]
-                                == PowerUp.JUMP
-                            ):
-                                pass
-                            elif (
-                                powerup_map.map[
-                                    player_pos[1] - gamestart + dx,
-                                    player_pos[0] - gamestart + dy,
-                                ]
-                                == PowerUp.CAVE_VENT
-                            ):
-                                gamelevel = level
-                                md0 = manhattan_distance(
-                                    player_pos, (gamestart, gamestart)
-                                )
-                                md_exit = md0 + 28
-                                exit_pos = player_pos
-                                for i in range(0, gameend - gamestart):
-                                    for j in range(0, gameend - gamestart):
-                                        if (
-                                            not maze.sol_cells[i, j]
-                                            and manhattan_distance((0, 0), (i, j))
-                                            == md_exit
-                                        ):
-                                            exit_pos = (j + gamestart, i + gamestart)
-                                gamestate = {
-                                    "player_pos": exit_pos,
-                                    "man_score": man_score,
-                                    "collect_score": collect_score,
-                                    "map": map,
-                                    "maze": maze,
-                                    "powerup_map": powerup_map,
-                                    "time": time,
-                                }
-                                black_surface = pygame.Surface(
-                                    (
-                                        screen.get_width(),
-                                        screen.get_height(),
-                                    )
-                                ).convert()
-                                black_surface.fill((0, 0, 0))
-                                for i in range(32):
-                                    black_surface.set_alpha(i * 8)
-                                    screen.blit(black_surface, (0, 0))
-                                    pygame.display.update()
-                                    clock.tick(60)
-                                return maze_game(
-                                    "cave",
-                                    {
-                                        "man_score": man_score,
-                                        "collect_score": collect_score,
-                                        "time": time,
-                                    },
-                                )
-                            map.remove_powerup(
-                                player_pos[1] + dx,
-                                player_pos[0] + dy,
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_ESCAPE]:
+            pygame.key.set_repeat(0, 0)
+            return menu()
+        if keys[pygame.K_UP] or keys[pygame.K_w]:
+            sprite = 6 + s_off
+            sprite1 = 15 + s_off
+            sprite2 = 24 + s_off
+            rflip = False
+            move_offset = (0, -1)
+            sprite_facing = (0, -1)
+        if keys[pygame.K_DOWN] or keys[pygame.K_s]:
+            sprite = 0 + s_off
+            sprite1 = 9 + s_off
+            sprite2 = 18 + s_off
+            rflip = False
+            move_offset = (0, 1)
+            sprite_facing = (0, 1)
+        if keys[pygame.K_LEFT] or keys[pygame.K_a]:
+            sprite = 3 + s_off
+            sprite1 = 12 + s_off
+            sprite2 = 21 + s_off
+            rflip = False
+            move_offset = (-1, 0)
+            sprite_facing = (-1, 0)
+        if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
+            sprite = 3 + s_off
+            sprite1 = 12 + s_off
+            sprite2 = 21 + s_off
+            rflip = True
+            move_offset = (1, 0)
+            sprite_facing = (1, 0)
+        powerup_used = False
+        if keys[pygame.K_SPACE] and powerup_map is not None:
+            for dx, dy in dirs:
+                if (
+                    0 <= player_pos[0] - gamestart + dx < gameend - gamestart
+                    and 0 <= player_pos[1] - gamestart + dy < gameend - gamestart
+                    and powerup_map.map[
+                        player_pos[1] - gamestart + dx,
+                        player_pos[0] - gamestart + dy,
+                    ]
+                    not in (0, PowerUp.EMPTY)
+                    and (dy, dx) == sprite_facing
+                ):
+                    powerup_used = True
+                    if (
+                        powerup_map.map[
+                            player_pos[1] - gamestart + dx,
+                            player_pos[0] - gamestart + dy,
+                        ]
+                        == PowerUp.SCORE_GAIN
+                    ):
+                        collect_score += 100
+                        score_plus_left = 2
+                    elif (
+                        powerup_map.map[
+                            player_pos[1] - gamestart + dx,
+                            player_pos[0] - gamestart + dy,
+                        ]
+                        == PowerUp.TIME_GAIN
+                    ):
+                        if isinstance(time, int):
+                            time += 10
+                        time_plus_left = 2
+                    elif (
+                        powerup_map.map[
+                            player_pos[1] - gamestart + dx,
+                            player_pos[0] - gamestart + dy,
+                        ]
+                        == PowerUp.JUMP
+                    ):
+                        pass
+                    elif (
+                        powerup_map.map[
+                            player_pos[1] - gamestart + dx,
+                            player_pos[0] - gamestart + dy,
+                        ]
+                        == PowerUp.CAVE_VENT
+                    ):
+                        gamelevel = level
+                        md0 = manhattan_distance(player_pos, (gamestart, gamestart))
+                        md_exit = md0 + 28
+                        exit_pos = player_pos
+                        for i in range(0, gameend - gamestart):
+                            for j in range(0, gameend - gamestart):
+                                if (
+                                    not maze.sol_cells[i, j]
+                                    and manhattan_distance((0, 0), (i, j)) == md_exit
+                                ):
+                                    exit_pos = (j + gamestart, i + gamestart)
+                        gamestate = {
+                            "player_pos": exit_pos,
+                            "man_score": man_score,
+                            "collect_score": collect_score,
+                            "map": map,
+                            "maze": maze,
+                            "powerup_map": powerup_map,
+                            "time": time,
+                        }
+                        black_surface = pygame.Surface(
+                            (
+                                screen.get_width(),
+                                screen.get_height(),
                             )
-                            powerup_map.map[
-                                player_pos[1] - gamestart + dx,
-                                player_pos[0] - gamestart + dy,
-                            ] = PowerUp.EMPTY
-                            break
+                        ).convert()
+                        black_surface.fill((0, 0, 0))
+                        for i in range(32):
+                            black_surface.set_alpha(i * 8)
+                            screen.blit(black_surface, (0, 0))
+                            pygame.display.update()
+                            clock.tick(60)
+                        return maze_game(
+                            "cave",
+                            {
+                                "man_score": man_score,
+                                "collect_score": collect_score,
+                                "time": time,
+                            },
+                        )
+                    map.remove_powerup(
+                        player_pos[1] + dx,
+                        player_pos[0] + dy,
+                    )
+                    powerup_map.map[
+                        player_pos[1] - gamestart + dx,
+                        player_pos[0] - gamestart + dy,
+                    ] = PowerUp.EMPTY
+                    break
+        if keys[pygame.K_SPACE] and not powerup_used:
+            jx, jy = 0, -1
+            j = 0
+            jumps = [7, 13, 18, 22, 26, 29, 31, 32]
+            for jump in jumps:
+                screen.blit(
+                    map.image,
+                    map.rect,
+                    (
+                        32 * (player_pos[0] - 14) + jump * jx,
+                        32 * (player_pos[1] - 9) + jump * jy,
+                        32 * (player_pos[0] + 15) + jump * jx,
+                        32 * (player_pos[1] + 10) + jump * jy,
+                    ),
+                )
+                screen.blit(
+                    pygame.transform.flip(player_sprite.tiles[sprite], rflip, False),
+                    (14 * 32, 9 * 32),
+                )
+                pygame.draw.rect(screen, (0, 0, 0), score_rect)
+                man_score = max(
+                    int((136 - manhattan_distance(player_pos, (88, 88))) ** 2),
+                    man_score,
+                )
+                score = man_score + collect_score
+                render_text(f"Score: {score}", 30, "#ffffff", width / 4, 680)
+                render_text(f"Time: {time}", 30, "#ffffff", 3 * width / 4, 680)
+                pygame.display.update()
+                clock.tick(60)
+            for jump in reversed(jumps):
+                screen.blit(
+                    map.image,
+                    map.rect,
+                    (
+                        32 * (player_pos[0] - 14) + jump * jx,
+                        32 * (player_pos[1] - 9) + jump * jy,
+                        32 * (player_pos[0] + 15) + jump * jx,
+                        32 * (player_pos[1] + 10) + jump * jy,
+                    ),
+                )
+                screen.blit(
+                    pygame.transform.flip(player_sprite.tiles[sprite], rflip, False),
+                    (14 * 32, 9 * 32),
+                )
+                pygame.draw.rect(screen, (0, 0, 0), score_rect)
+                man_score = max(
+                    int((136 - manhattan_distance(player_pos, (88, 88))) ** 2),
+                    man_score,
+                )
+                score = man_score + collect_score
+                render_text(f"Score: {score}", 30, "#ffffff", width / 4, 680)
+                render_text(f"Time: {time}", 30, "#ffffff", 3 * width / 4, 680)
+                pygame.display.update()
+                clock.tick(60)
         if (
             move_offset is not None
             and player_pos[0] + move_offset[0] >= gamestart

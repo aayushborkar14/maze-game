@@ -357,10 +357,10 @@ def game_end(score, completed, level):
                     scores.append(int(line.strip()))
         scores.append(score)
         with open(f"highscores{level}.txt", "w+") as f:
-            for i, score in enumerate(sorted(scores, reverse=True)):
+            for i, s in enumerate(sorted(scores, reverse=True)):
                 if i >= 10:
                     break
-                f.write(f"{score}\n")
+                f.write(f"{s}\n")
     else:
         scores.append(score)
         with open(f"highscores{level}.txt", "w") as f:

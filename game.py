@@ -284,35 +284,41 @@ def maze_game(level, maze_state=None):
                     break
         if keys[pygame.K_SPACE] and not powerup_used:
             jx, jy = 0, -1
-            dx, dy = 0, 0
+            dx, dy = sprite_facing
             j = 0
             jumps = [7, 13, 18, 22, 26, 29, 31, 32]
-            if move_offset is not None:
-                dx, dy = move_offset
             if dx != 0:
                 jx, jy = 0, -1
             elif dy != 0:
                 jx, jy = -1, 0
-            if not (
-                player_pos[0] + dx >= gamestart
-                and player_pos[0] + dx < gameend
-                and player_pos[1] + dy >= gamestart
-                and player_pos[1] + dy < gameend
+            jfactor = 0
+            if (
+                0 <= player_pos[0] + dx - gamestart < gameend - gamestart
+                and 0 <= player_pos[1] + dy - gamestart < gameend - gamestart
                 and not maze.cells[
                     player_pos[1] + dy - gamestart,
                     player_pos[0] + dx - gamestart,
                 ]
             ):
-                dx, dy = 0, 0
+                jfactor = 2
+                if (
+                    0 <= player_pos[0] + 2 * dx - gamestart < gameend - gamestart
+                    and 0 <= player_pos[1] + 2 * dy - gamestart < gameend - gamestart
+                    and not maze.cells[
+                        player_pos[1] + 2 * dy - gamestart,
+                        player_pos[0] + 2 * dx - gamestart,
+                    ]
+                ):
+                    jfactor = 4
             for i, jump in enumerate(jumps):
                 screen.blit(
                     map.image,
                     map.rect,
                     (
-                        32 * (player_pos[0] - 14) + jump * jx + (i + 1) * 4 * dx,
-                        32 * (player_pos[1] - 9) + jump * jy + (i + 1) * 4 * dy,
-                        32 * (player_pos[0] + 15) + jump * jx + (i + 1) * 4 * dx,
-                        32 * (player_pos[1] + 10) + jump * jy + (i + 1) * 4 * dy,
+                        32 * (player_pos[0] - 14) + jump * jx + (i + 1) * jfactor * dx,
+                        32 * (player_pos[1] - 9) + jump * jy + (i + 1) * jfactor * dy,
+                        32 * (player_pos[0] + 15) + jump * jx + (i + 1) * jfactor * dx,
+                        32 * (player_pos[1] + 10) + jump * jy + (i + 1) * jfactor * dy,
                     ),
                 )
                 screen.blit(
@@ -329,27 +335,23 @@ def maze_game(level, maze_state=None):
                 render_text(f"Time: {time}", 30, "#ffffff", 3 * width / 4, 680)
                 pygame.display.update()
                 clock.tick(60)
-            player_pos = (player_pos[0] + dx, player_pos[1] + dy)
-            if not (
-                player_pos[0] + dx >= gamestart
-                and player_pos[0] + dx < gameend
-                and player_pos[1] + dy >= gamestart
-                and player_pos[1] + dy < gameend
-                and not maze.cells[
-                    player_pos[1] + dy - gamestart,
-                    player_pos[0] + dx - gamestart,
-                ]
-            ):
-                dx, dy = 0, 0
             for i, jump in enumerate(reversed(jumps)):
                 screen.blit(
                     map.image,
                     map.rect,
                     (
-                        32 * (player_pos[0] - 14) + jump * jx + (i + 1) * 4 * dx,
-                        32 * (player_pos[1] - 9) + jump * jy + (i + 1) * 4 * dy,
-                        32 * (player_pos[0] + 15) + jump * jx + (i + 1) * 4 * dx,
-                        32 * (player_pos[1] + 10) + jump * jy + (i + 1) * 4 * dy,
+                        32 * (player_pos[0] - 14)
+                        + jump * jx
+                        + (i + 1 + len(jumps)) * jfactor * dx,
+                        32 * (player_pos[1] - 9)
+                        + jump * jy
+                        + (i + 1 + len(jumps)) * jfactor * dy,
+                        32 * (player_pos[0] + 15)
+                        + jump * jx
+                        + (i + 1 + len(jumps)) * jfactor * dx,
+                        32 * (player_pos[1] + 10)
+                        + jump * jy
+                        + (i + 1 + len(jumps)) * jfactor * dy,
                     ),
                 )
                 screen.blit(
@@ -366,7 +368,10 @@ def maze_game(level, maze_state=None):
                 render_text(f"Time: {time}", 30, "#ffffff", 3 * width / 4, 680)
                 pygame.display.update()
                 clock.tick(60)
-            player_pos = (player_pos[0] + dx, player_pos[1] + dy)
+            player_pos = (
+                player_pos[0] + (jfactor // 2) * dx,
+                player_pos[1] + (jfactor // 2) * dy,
+            )
         elif (
             move_offset is not None
             and player_pos[0] + move_offset[0] >= gamestart

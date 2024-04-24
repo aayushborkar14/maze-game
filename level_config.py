@@ -1,6 +1,7 @@
 from maze import Maze
 from powerup import PowerUp, PowerUpMap
 from tiles import Tilemap, Tileset
+from trap import Trap, TrapMap
 
 
 class LevelConfig:
@@ -12,6 +13,7 @@ class LevelConfig:
         self.tsc = Tileset("assets/cavetiles.png")
         self.box = Tileset("assets/itembox.png", size=(252, 252))
         self.vent = Tileset("assets/vent.png")
+        self.trap_tile = Tileset("assets/beartrap.png").tiles[0]
         self.powerup_weights = {
             PowerUp.EMPTY: 0.95,
             PowerUp.SCORE_GAIN: 0.02,
@@ -27,11 +29,18 @@ class LevelConfig:
             PowerUp.TIME_LOSS: self.box.tiles[0],
             PowerUp.CAVE_VENT: self.vent.tiles[0],
         }
+        self.trap_weights = {
+            Trap.SPRITE_FREEZE: 0.25,
+            Trap.TIME_LOSS: 0.25,
+            Trap.SCORE_LOSS: 0.25,
+            Trap.REDUCED_VISION: 0.25,
+        }
 
     def get_level_config(self, level):
         map = None
         powerup_map = PowerUpMap(70, self.powerup_weights)
         maze = Maze(level, 70)
+        trap_map = TrapMap(maze.cells, self.trap_weights)
         time = None
         if level == 1:
             map = Tilemap(
@@ -42,15 +51,17 @@ class LevelConfig:
                 "assets/TerrainLayer1.npy",
                 "assets/TopLayer1.npy",
                 powerup_map.map,
+                trap_map.map,
                 maze.cells,
                 maze.sol_cells,
                 434,
                 90,
                 self.powerup_tiles,
+                self.trap_tile,
                 size=(110, 110),
             )
-            time = 180
-        elif level == 2:
+            time = 179
+        elif level == 1:
             map = Tilemap(
                 self.ts2,
                 self.ts2,
@@ -59,11 +70,13 @@ class LevelConfig:
                 "assets/TerrainLayer2.npy",
                 "assets/TopLayer2.npy",
                 powerup_map.map,
+                trap_map.map,
                 maze.cells,
                 maze.sol_cells,
                 4109,
                 4378,
                 self.powerup_tiles,
+                self.trap_tile,
                 size=(110, 110),
             )
             time = 240
@@ -76,11 +89,13 @@ class LevelConfig:
                 "assets/TerrainLayer3.npy",
                 None,
                 powerup_map.map,
+                trap_map.map,
                 maze.cells,
                 maze.sol_cells,
                 0,
                 3,
                 self.powerup_tiles,
+                self.trap_tile,
                 size=(110, 110),
             )
             time = 300
@@ -94,10 +109,12 @@ class LevelConfig:
                 None,
                 None,
                 None,
+                None,
                 maze.cells,
                 maze.sol_cells,
                 1,
                 3,
+                None,
                 None,
                 size=(70, 70),
                 game=(30 - 1, 30 - 1),

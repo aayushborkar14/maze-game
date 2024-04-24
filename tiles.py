@@ -2,6 +2,7 @@ import numpy as np
 import pygame
 
 from powerup import PowerUp
+from trap import Trap
 
 
 class Tileset:
@@ -40,11 +41,13 @@ class Tilemap:
         terrain_layer,
         top_layer,
         powerup_map,
+        trap_map,
         maze_layer,
         sol_layer,
         wall_tile,
         sol_tile,
         powerup_tiles,
+        trap_tile,
         size=(110, 110),
         game=(70 - 1, 70 - 1),
         rect=None,
@@ -57,6 +60,7 @@ class Tilemap:
         self.layer2 = None
         self.layer3 = None
         self.powerup_map = powerup_map
+        self.trap_map = trap_map
         if terrain_layer is not None:
             self.layer2 = np.load(terrain_layer)
         if top_layer is not None:
@@ -65,6 +69,7 @@ class Tilemap:
         self.sol = sol_layer
         self.wall_tile = wall_tile
         self.sol_tile = sol_tile
+        self.trap_tile = trap_tile
         self.powerup_tiles = powerup_tiles
         self.gamestart = (size[0] - game[0]) // 2
         self.gameend = (size[0] + game[0]) // 2
@@ -114,6 +119,15 @@ class Tilemap:
                         ],
                         (j * 32, i * 32),
                     )
+                if (
+                    self.trap_map is not None
+                    and self.gamestart <= i < self.gameend
+                    and self.gamestart <= j < self.gameend
+                    and self.trap_map[i - self.gamestart, j - self.gamestart]
+                    != Trap.EMPTY
+                    and self.trap_map[i - self.gamestart, j - self.gamestart] != 0
+                ):
+                    self.image.blit(self.trap_tile, (j * 32, i * 32))
         self.solimage = self.image.copy()
         soltile = self.tileset1.tiles[self.sol_tile]
         for i in range(self.gamestart, self.gameend):

@@ -79,7 +79,6 @@ def maze_game(level, maze_state=None):
     time_plus_left = 0
     black_surface = pygame.Surface((screen.get_width(), screen.get_height())).convert()
     black_surface.fill((0, 0, 0))
-    jumping = False
     for i in range(31, 0, -1):
         black_surface.set_alpha(i * 8)
         screen.blit(

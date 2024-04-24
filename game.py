@@ -17,6 +17,7 @@ clock = pygame.time.Clock()
 selected_level = 1
 player_sprite = Tileset("assets/sprites.png", size=(16, 16))
 player_sprite.load()
+reduced_vision_screen = pygame.image.load("assets/reduced_vision.png")
 dirs = ((1, 0), (0, 1), (-1, 0), (0, -1))
 gamestate = None
 gamelevel = 1
@@ -366,6 +367,9 @@ def maze_game(level, maze_state=None):
                         for i in range(32):
                             black_surface.set_alpha(i * 8)
                             screen.blit(black_surface, (0, 0))
+                            if reduced_time:
+                                screen.convert_alpha()
+                                screen.blit(reduced_vision_screen, (0, 0))
                             pygame.display.update()
                             clock.tick(60)
                         return maze_game(
@@ -436,6 +440,9 @@ def maze_game(level, maze_state=None):
                 score = man_score + collect_score
                 render_text(f"Score: {score}", 30, "#ffffff", width / 4, 680)
                 render_text(f"Time: {time}", 30, "#ffffff", 3 * width / 4, 680)
+                if reduced_time:
+                    screen.convert_alpha()
+                    screen.blit(reduced_vision_screen, (0, 0))
                 pygame.display.update()
                 clock.tick(60)
             for i, jump in enumerate(reversed(jumps)):
@@ -469,6 +476,9 @@ def maze_game(level, maze_state=None):
                 score = man_score + collect_score
                 render_text(f"Score: {score}", 30, "#ffffff", width / 4, 680)
                 render_text(f"Time: {time}", 30, "#ffffff", 3 * width / 4, 680)
+                if reduced_time:
+                    screen.convert_alpha()
+                    screen.blit(reduced_vision_screen, (0, 0))
                 pygame.display.update()
                 clock.tick(60)
             player_pos = (
@@ -520,6 +530,9 @@ def maze_game(level, maze_state=None):
                     render_text("+100", 30, "#00ff00", 3 * width / 8, 680)
                 if time_plus_left:
                     render_text("+10", 30, "#00ff00", 7 * width / 8, 680)
+                if reduced_time:
+                    screen.convert_alpha()
+                    screen.blit(reduced_vision_screen, (0, 0))
                 pygame.display.update()
                 clock.tick(60)  # limit the frame rate to 60 FPS
             player_pos = (player_pos[0] + dx, player_pos[1] + dy)
@@ -535,7 +548,8 @@ def maze_game(level, maze_state=None):
         if time_plus_left:
             render_text("+10", 30, "#00ff00", 7 * width / 8, 680)
         if reduced_time:
-            pass
+            screen.convert_alpha()
+            screen.blit(reduced_vision_screen, (0, 0))
         pygame.display.update()
         clock.tick(60)  # limit the frame rate to 60 FPS
 

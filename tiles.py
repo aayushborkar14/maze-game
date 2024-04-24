@@ -137,7 +137,7 @@ class Tilemap:
         pygame.image.save(self.solimage, "path.png")
         self.solimage = None
 
-    def remove_powerup(self, i, j):
+    def reset_tile(self, i, j):
         if self.layer1[i, j] != -1:
             tile1 = self.tileset1.tiles[self.layer1[i, j]]
             self.image.blit(tile1, (j * 32, i * 32))

@@ -31,10 +31,10 @@ class LevelConfig:
         }
         self.trap_weights = {
             Trap.SPRITE_FREEZE: 0.25,
-            Trap.TIME_LOSS: 0.25,
             Trap.SCORE_LOSS: 0.25,
             Trap.REDUCED_VISION: 0.25,
         }
+        self.trap_weights = {Trap.REDUCED_VISION: 1}
 
     def get_level_config(self, level):
         map = None
@@ -61,7 +61,7 @@ class LevelConfig:
                 size=(110, 110),
             )
             time = 179
-        elif level == 1:
+        elif level == 2:
             map = Tilemap(
                 self.ts2,
                 self.ts2,
@@ -119,4 +119,4 @@ class LevelConfig:
                 size=(70, 70),
                 game=(30 - 1, 30 - 1),
             )
-        return map, maze, powerup_map, time
+        return map, maze, powerup_map, trap_map, time

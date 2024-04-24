@@ -5,6 +5,7 @@ import pygame
 from level_config import LevelConfig
 from powerup import PowerUp
 from tiles import Tileset
+from trap import Trap
 
 pygame.init()
 
@@ -53,14 +54,16 @@ def maze_game(level, maze_state=None):
             else:
                 powerup_map = None
         else:
-            map, maze, powerup_map, time = LevelConfig().get_level_config(level)
+            map, maze, powerup_map, trap_map, time = LevelConfig().get_level_config(
+                level
+            )
         if "time" in maze_state:
             time = maze_state["time"]
     else:
         player_pos = (20, 20)
         man_score = 0
         collect_score = 0
-        map, maze, powerup_map, time = LevelConfig().get_level_config(level)
+        map, maze, powerup_map, trap_map, time = LevelConfig().get_level_config(level)
     s_off = 0
     gamestart = 20
     gameend = 89
@@ -79,6 +82,8 @@ def maze_game(level, maze_state=None):
     time_plus_left = 0
     black_surface = pygame.Surface((screen.get_width(), screen.get_height())).convert()
     black_surface.fill((0, 0, 0))
+    freeze_time = 0
+    reduced_time = 0
     for i in range(31, 0, -1):
         black_surface.set_alpha(i * 8)
         screen.blit(
@@ -138,6 +143,97 @@ def maze_game(level, maze_state=None):
             pygame.transform.flip(player_sprite.tiles[sprite], rflip, False),
             (14 * 32, 9 * 32),
         )
+        if freeze_time:
+            pygame.draw.rect(screen, (0, 0, 0), score_rect)
+            man_score = max(
+                int((136 - manhattan_distance(player_pos, (88, 88))) ** 2), man_score
+            )
+            score = man_score + collect_score
+            render_text(f"Score: {score}", 30, "#ffffff", width / 4, 680)
+            render_text(f"Time: {time}", 30, "#ffffff", 3 * width / 4, 680)
+            if score_plus_left:
+                render_text("+100", 30, "#00ff00", 3 * width / 8, 680)
+            if time_plus_left:
+                render_text("+10", 30, "#00ff00", 7 * width / 8, 680)
+            freeze_screen = pygame.Surface(
+                (screen.get_width(), screen.get_height())
+            ).convert_alpha()
+            freeze_screen.fill((0, 0, 0, 128))
+            render_text(
+                f"Frozen for {freeze_time} seconds",
+                100,
+                "#ffffff",
+                width / 2,
+                height / 2,
+            )
+            screen.blit(freeze_screen, (0, 0))
+        if (
+            0 <= player_pos[0] - gamestart < gameend - gamestart
+            and 0 <= player_pos[1] - gamestart < gameend - gamestart
+            and trap_map.map[
+                player_pos[1] - gamestart,
+                player_pos[0] - gamestart,
+            ]
+            not in (0, Trap.EMPTY)
+        ):
+            if (
+                (
+                    trap_map.map[
+                        player_pos[1] - gamestart,
+                        player_pos[0] - gamestart,
+                    ]
+                )
+                == Trap.SPRITE_FREEZE
+            ):
+                freeze_time = 5
+            elif (
+                (
+                    trap_map.map[
+                        player_pos[1] - gamestart,
+                        player_pos[0] - gamestart,
+                    ]
+                )
+                == Trap.TIME_LOSS
+            ):
+                pass
+            elif (
+                (
+                    trap_map.map[
+                        player_pos[1] - gamestart,
+                        player_pos[0] - gamestart,
+                    ]
+                )
+                == Trap.SCORE_LOSS
+            ):
+                pass
+            elif (
+                (
+                    trap_map.map[
+                        player_pos[1] - gamestart,
+                        player_pos[0] - gamestart,
+                    ]
+                )
+                == Trap.START_AGAIN
+            ):
+                pass
+            elif (
+                (
+                    trap_map.map[
+                        player_pos[1] - gamestart,
+                        player_pos[0] - gamestart,
+                    ]
+                )
+                == Trap.REDUCED_VISION
+            ):
+                reduced_time = 10
+            map.reset_tile(
+                player_pos[1],
+                player_pos[0],
+            )
+            trap_map.map[
+                player_pos[1] - gamestart,
+                player_pos[0] - gamestart,
+            ] = PowerUp.EMPTY
         move_offset = None
         sprite1 = 0
         sprite2 = 0
@@ -153,9 +249,17 @@ def maze_game(level, maze_state=None):
                         score_plus_left -= 1
                     if time_plus_left:
                         time_plus_left -= 1
+                    if freeze_time:
+                        freeze_time -= 1
+                    if reduced_time:
+                        reduced_time -= 1
         keys = pygame.key.get_pressed()
         if keys[pygame.K_ESCAPE]:
             return menu()
+        if freeze_time:
+            pygame.display.update()
+            clock.tick(60)  # limit the frame rate to 60 FPS
+            continue
         if keys[pygame.K_UP] or keys[pygame.K_w]:
             sprite = 6 + s_off
             sprite1 = 15 + s_off
@@ -272,7 +376,7 @@ def maze_game(level, maze_state=None):
                                 "time": time,
                             },
                         )
-                    map.remove_powerup(
+                    map.reset_tile(
                         player_pos[1] + dx,
                         player_pos[0] + dy,
                     )
@@ -430,6 +534,8 @@ def maze_game(level, maze_state=None):
             render_text("+100", 30, "#00ff00", 3 * width / 8, 680)
         if time_plus_left:
             render_text("+10", 30, "#00ff00", 7 * width / 8, 680)
+        if reduced_time:
+            pass
         pygame.display.update()
         clock.tick(60)  # limit the frame rate to 60 FPS
 

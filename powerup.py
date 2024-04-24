@@ -5,10 +5,7 @@ class PowerUp:
     EMPTY = 1
     SCORE_GAIN = 2
     TIME_GAIN = 3
-    JUMP = 4
-    SCORE_LOSS = 5
-    TIME_LOSS = 6
-    CAVE_VENT = 7
+    CAVE_VENT = 4
 
 
 class PowerUpMap:

@@ -24,9 +24,6 @@ class LevelConfig:
             PowerUp.EMPTY: self.box.tiles[0],
             PowerUp.SCORE_GAIN: self.box.tiles[0],
             PowerUp.TIME_GAIN: self.box.tiles[0],
-            PowerUp.JUMP: self.box.tiles[0],
-            PowerUp.SCORE_LOSS: self.box.tiles[0],
-            PowerUp.TIME_LOSS: self.box.tiles[0],
             PowerUp.CAVE_VENT: self.vent.tiles[0],
         }
         self.trap_weights = {

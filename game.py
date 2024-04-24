@@ -300,14 +300,6 @@ def maze_game(level, maze_state=None):
                             player_pos[1] - gamestart + dx,
                             player_pos[0] - gamestart + dy,
                         ]
-                        == PowerUp.JUMP
-                    ):
-                        pass
-                    elif (
-                        powerup_map.map[
-                            player_pos[1] - gamestart + dx,
-                            player_pos[0] - gamestart + dy,
-                        ]
                         == PowerUp.CAVE_VENT
                     ):
                         gamelevel = level

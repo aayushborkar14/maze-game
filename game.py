@@ -54,6 +54,8 @@ def maze_game(level, maze_state=None):
                 powerup_map = maze_state["powerup_map"]
             else:
                 powerup_map = None
+            if "trap_map" in maze_state:
+                trap_map = maze_state["trap_map"]
         else:
             map, maze, powerup_map, trap_map, time = LevelConfig().get_level_config(
                 level
@@ -195,36 +197,6 @@ def maze_game(level, maze_state=None):
                         player_pos[0] - gamestart,
                     ]
                 )
-                == Trap.TIME_LOSS
-            ):
-                pass
-            elif (
-                (
-                    trap_map.map[
-                        player_pos[1] - gamestart,
-                        player_pos[0] - gamestart,
-                    ]
-                )
-                == Trap.SCORE_LOSS
-            ):
-                pass
-            elif (
-                (
-                    trap_map.map[
-                        player_pos[1] - gamestart,
-                        player_pos[0] - gamestart,
-                    ]
-                )
-                == Trap.START_AGAIN
-            ):
-                pass
-            elif (
-                (
-                    trap_map.map[
-                        player_pos[1] - gamestart,
-                        player_pos[0] - gamestart,
-                    ]
-                )
                 == Trap.REDUCED_VISION
             ):
                 reduced_time = 10
@@ -356,6 +328,7 @@ def maze_game(level, maze_state=None):
                             "map": map,
                             "maze": maze,
                             "powerup_map": powerup_map,
+                            "trap_map": trap_map,
                             "time": time,
                         }
                         black_surface = pygame.Surface(
@@ -607,7 +580,7 @@ def game_end(score, completed, level):
         scores.append(score)
         with open(f"highscores{level}.txt", "w+") as f:
             for i, s in enumerate(sorted(scores, reverse=True)):
-                if i >= 10:
+                if i >= 8:
                     break
                 f.write(f"{s}\n")
     else:
@@ -698,6 +671,7 @@ def leaderboard(level):
             for line in f:
                 if line.strip().isdigit():
                     scores.append(int(line.strip()))
+    scores = scores[:8]
     while running:
         screen.fill((0, 0, 0))
         render_text("Leaderboard", 100, "#ffffff", width / 2, 100)

@@ -4,10 +4,7 @@ import numpy as np
 class Trap:
     EMPTY = 1
     SPRITE_FREEZE = 2
-    TIME_LOSS = 3
-    SCORE_LOSS = 4
-    START_AGAIN = 5
-    REDUCED_VISION = 6
+    REDUCED_VISION = 3
 
 
 class TrapMap:

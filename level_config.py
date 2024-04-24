@@ -30,11 +30,10 @@ class LevelConfig:
             PowerUp.CAVE_VENT: self.vent.tiles[0],
         }
         self.trap_weights = {
+            Trap.EMPTY: 0.25,
             Trap.SPRITE_FREEZE: 0.25,
-            Trap.SCORE_LOSS: 0.25,
-            Trap.REDUCED_VISION: 0.25,
+            Trap.REDUCED_VISION: 0.5,
         }
-        self.trap_weights = {Trap.REDUCED_VISION: 1}
 
     def get_level_config(self, level):
         map = None

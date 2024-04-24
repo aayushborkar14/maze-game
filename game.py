@@ -131,6 +131,11 @@ def maze_game(level, maze_state=None):
                 assert gamestate is not None
                 gamestate["time"] = time
                 return maze_game(gamelevel, gamestate)
+            man_score = max(
+                int((136 - manhattan_distance(player_pos, (88, 88))) ** 2), man_score
+            )
+            assert time is not None
+            score = man_score + collect_score + time * 100
             return game_end(score, True, level)
         image_blitted = False
         screen.blit(

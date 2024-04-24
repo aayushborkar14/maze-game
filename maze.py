@@ -7,7 +7,7 @@ from disjoint_set import DisjointSet
 
 
 class Maze:
-    def __init__(self, level=1, side=70):
+    def __init__(self, level, side=70):
         self.side = side - int(side % 2 == 0)
         self.cells = np.full(
             (self.side, self.side), True
@@ -18,6 +18,7 @@ class Maze:
         self.sol_cells = np.full(
             (self.side, self.side), True
         )  # True if wall, False if path
+        self.level = level
         random.seed(time.time())
         if level == 1:
             self.recursive_backtrack()
@@ -26,6 +27,9 @@ class Maze:
             self.prim()
         elif level == 3:
             self.wilson()
+        elif level == "cave":
+            self.recursive_backtrack()
+            self.recurse_sol()
 
     def check_bounds(self, x, y):
         return 0 <= x < self.side and 0 <= y < self.side
@@ -163,7 +167,10 @@ class Maze:
                 else:
                     pathstr += "L"
             prex, prey = x, y
-        with open("path.txt", "w+") as f:
+        pathfilename = "path.txt"
+        if self.level == "cave":
+            pathfilename = "cave_path.txt"
+        with open(pathfilename, "w+") as f:
             f.write(pathstr)
 
     def wilson(self):

@@ -51,6 +51,7 @@ class Tilemap:
         size=(110, 110),
         game=(70 - 1, 70 - 1),
         rect=None,
+        image_path="path.png",
     ):
         self.size = size
         self.tileset1 = tileset1
@@ -73,6 +74,7 @@ class Tilemap:
         self.powerup_tiles = powerup_tiles
         self.gamestart = (size[0] - game[0]) // 2
         self.gameend = (size[0] + game[0]) // 2
+        self.image_path = image_path
 
         h, w = self.size
         self.image = pygame.Surface((32 * w, 32 * h))
@@ -134,7 +136,7 @@ class Tilemap:
             for j in range(self.gamestart, self.gameend):
                 if not self.sol[i - self.gamestart, j - self.gamestart]:
                     self.solimage.blit(soltile, (j * 32, i * 32))
-        pygame.image.save(self.solimage, "path.png")
+        pygame.image.save(self.solimage, self.image_path)
         self.solimage = None
 
     def reset_tile(self, i, j):

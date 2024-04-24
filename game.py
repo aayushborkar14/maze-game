@@ -177,7 +177,8 @@ def maze_game(level, maze_state=None):
             )
             screen.blit(freeze_screen, (0, 0))
         if (
-            0 <= player_pos[0] - gamestart < gameend - gamestart
+            trap_map is not None
+            and 0 <= player_pos[0] - gamestart < gameend - gamestart
             and 0 <= player_pos[1] - gamestart < gameend - gamestart
             and trap_map.map[
                 player_pos[1] - gamestart,

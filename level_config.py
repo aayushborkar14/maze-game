@@ -96,7 +96,9 @@ class LevelConfig:
             )
             time = 300
         elif level == "cave":
-            maze = Maze(1, 30)
+            maze = Maze("cave", 30)
+            powerup_map = None
+            trap_map = None
             map = Tilemap(
                 self.tsc,
                 self.tsc,
@@ -114,5 +116,6 @@ class LevelConfig:
                 None,
                 size=(70, 70),
                 game=(30 - 1, 30 - 1),
+                image_path="cave_path.png",
             )
         return map, maze, powerup_map, trap_map, time

@@ -130,6 +130,7 @@ def maze_game(level, maze_state=None):
                 gamestate["time"] = time
                 return maze_game(gamelevel, gamestate)
             return game_end(score, True, level)
+        image_blitted = False
         screen.blit(
             map.image,
             map.rect,
@@ -432,6 +433,7 @@ def maze_game(level, maze_state=None):
                     pygame.transform.flip(player_sprite.tiles[sprite], rflip, False),
                     (14 * 32, 9 * 32),
                 )
+                image_blitted = False
                 pygame.draw.rect(screen, (0, 0, 0), score_rect)
                 man_score = max(
                     int((136 - manhattan_distance(player_pos, (88, 88))) ** 2),
@@ -443,6 +445,7 @@ def maze_game(level, maze_state=None):
                 if reduced_time:
                     screen.convert_alpha()
                     screen.blit(reduced_vision_screen, (0, 0))
+                    image_blitted = True
                 pygame.display.update()
                 clock.tick(60)
             for i, jump in enumerate(reversed(jumps)):
@@ -468,6 +471,7 @@ def maze_game(level, maze_state=None):
                     pygame.transform.flip(player_sprite.tiles[sprite], rflip, False),
                     (14 * 32, 9 * 32),
                 )
+                image_blitted = False
                 pygame.draw.rect(screen, (0, 0, 0), score_rect)
                 man_score = max(
                     int((136 - manhattan_distance(player_pos, (88, 88))) ** 2),
@@ -479,6 +483,7 @@ def maze_game(level, maze_state=None):
                 if reduced_time:
                     screen.convert_alpha()
                     screen.blit(reduced_vision_screen, (0, 0))
+                    image_blitted = True
                 pygame.display.update()
                 clock.tick(60)
             player_pos = (
@@ -508,6 +513,7 @@ def maze_game(level, maze_state=None):
                         32 * (player_pos[1] + 10) + i * dy,
                     ),
                 )
+                image_blitted = False
                 if i % 8:
                     screen.blit(
                         pygame.transform.flip(
@@ -533,6 +539,7 @@ def maze_game(level, maze_state=None):
                 if reduced_time:
                     screen.convert_alpha()
                     screen.blit(reduced_vision_screen, (0, 0))
+                    image_blitted = True
                 pygame.display.update()
                 clock.tick(60)  # limit the frame rate to 60 FPS
             player_pos = (player_pos[0] + dx, player_pos[1] + dy)
@@ -547,7 +554,7 @@ def maze_game(level, maze_state=None):
             render_text("+100", 30, "#00ff00", 3 * width / 8, 680)
         if time_plus_left:
             render_text("+10", 30, "#00ff00", 7 * width / 8, 680)
-        if reduced_time:
+        if reduced_time and not image_blitted:
             screen.convert_alpha()
             screen.blit(reduced_vision_screen, (0, 0))
         pygame.display.update()

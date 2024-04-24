@@ -371,6 +371,13 @@ def maze_game(level, maze_state=None):
                             if reduced_time:
                                 screen.convert_alpha()
                                 screen.blit(reduced_vision_screen, (0, 0))
+                                render_text(
+                                    f"Reduced vision for {reduced_time} seconds",
+                                    30,
+                                    "#ffffff",
+                                    160,
+                                    60,
+                                )
                             pygame.display.update()
                             clock.tick(60)
                         return maze_game(
@@ -445,6 +452,13 @@ def maze_game(level, maze_state=None):
                 if reduced_time:
                     screen.convert_alpha()
                     screen.blit(reduced_vision_screen, (0, 0))
+                    render_text(
+                        f"Reduced vision for {reduced_time} seconds",
+                        30,
+                        "#ffffff",
+                        160,
+                        60,
+                    )
                     image_blitted = True
                 pygame.display.update()
                 clock.tick(60)
@@ -483,6 +497,13 @@ def maze_game(level, maze_state=None):
                 if reduced_time:
                     screen.convert_alpha()
                     screen.blit(reduced_vision_screen, (0, 0))
+                    render_text(
+                        f"Reduced vision for {reduced_time} seconds",
+                        30,
+                        "#ffffff",
+                        160,
+                        60,
+                    )
                     image_blitted = True
                 pygame.display.update()
                 clock.tick(60)
@@ -539,6 +560,13 @@ def maze_game(level, maze_state=None):
                 if reduced_time:
                     screen.convert_alpha()
                     screen.blit(reduced_vision_screen, (0, 0))
+                    render_text(
+                        f"Reduced vision for {reduced_time} seconds",
+                        30,
+                        "#ffffff",
+                        160,
+                        60,
+                    )
                     image_blitted = True
                 pygame.display.update()
                 clock.tick(60)  # limit the frame rate to 60 FPS
@@ -557,6 +585,13 @@ def maze_game(level, maze_state=None):
         if reduced_time and not image_blitted:
             screen.convert_alpha()
             screen.blit(reduced_vision_screen, (0, 0))
+            render_text(
+                f"Reduced vision for {reduced_time} seconds",
+                30,
+                "#ffffff",
+                160,
+                60,
+            )
         pygame.display.update()
         clock.tick(60)  # limit the frame rate to 60 FPS
 

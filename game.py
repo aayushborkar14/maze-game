@@ -191,7 +191,6 @@ def maze_game(level, maze_state=None):
         ):
             if not (freeze_time or reduced_time):
                 music_pos = pygame.mixer.music.get_pos()
-                print(music_pos)
                 pygame.mixer.music.stop()
                 pygame.mixer.music.unload()
                 pygame.mixer.music.load("assets/lowpassmaze.mp3")

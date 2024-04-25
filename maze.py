@@ -23,7 +23,7 @@ class Maze:
         if level == 1:
             # self.recursive_backtrack()
             # self.recurse_sol()
-            self.kruskal()
+            self.eller()
         elif level == 2:
             self.prim()
         elif level == 3:
@@ -40,8 +40,73 @@ class Maze:
         return 2 * (num % n), 2 * (num // n)
 
     def eller(self):
+        self.cells = np.vstack([self.cells, np.full((1, self.side), True)])
         # consider even rows only
-        pass
+        weight_lists = [False] * 60 + [True] * 40
+        prev_sets = []
+        for i in range(0, self.side, 2):
+            sets = []
+            if i:
+                sets = prev_sets
+                not_in_set = []
+                for j in range(0, self.side, 2):
+                    self.cells[i, j] = self.cells[i - 2, j]
+                    self.cells[i + 1, j] = self.cells[i - 1, j]
+                    if j + 1 < self.side:
+                        self.cells[i, j + 1] = False
+                    if self.cells[i + 1, j]:
+                        for idx, s in enumerate(sets):
+                            if j in s:
+                                break
+                        if sets[idx] == {j}:
+                            sets.pop(idx)
+                        else:
+                            sets[idx].remove(j)
+                        not_in_set.append(j)
+                    self.cells[i + 1, j] = False
+                for j in not_in_set:
+                    sets.append({j})
+                sets.sort(key=min)
+                set_idx = 0
+                for j in range(0, self.side - 2, 2):
+                    for set_idx, s in enumerate(sets):
+                        if j in s:
+                            break
+                    if j + 2 in sets[set_idx]:
+                        self.cells[i, j + 1] = True
+                    elif random.choice(weight_lists):
+                        self.cells[i, j + 1] = True
+                    else:
+                        j2_idx = 0
+                        for j2_idx, j2 in enumerate(sets):
+                            if j + 2 in j2:
+                                break
+                        sets[set_idx] = sets[set_idx].union(sets[j2_idx])
+                        sets.pop(j2_idx)
+            else:
+                for j in range(0, self.side, 2):
+                    if j == 0 or self.cells[i, j - 1]:
+                        sets.append({j})
+                    else:
+                        sets[-1].add(j)
+                    self.cells[i, j] = False
+                    if j + 1 < self.side:
+                        self.cells[i, j + 1] = random.choice(weight_lists)
+            for j in range(0, self.side, 2):
+                self.cells[i + 1, j] = True
+            if i + 1 < self.side:
+                for s in sets:
+                    sl = list(s)
+                    for _ in range(random.randint(1, len(s) // 2 + 1)):
+                        sj = random.choice(sl)
+                        self.cells[i + 1, sj] = False
+                        sl.remove(sj)
+            prev_sets = sets
+        # last row processing
+        for s in prev_sets:
+            if max(s) + 1 < self.side:
+                self.cells[self.side - 1, max(s) + 1] = False
+        self.cells = self.cells[: self.side, :]
 
     def kruskal(self):
         n = self.side // 2 + 1

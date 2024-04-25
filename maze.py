@@ -21,8 +21,9 @@ class Maze:
         self.level = level
         random.seed(time.time())
         if level == 1:
-            self.recursive_backtrack()
-            self.recurse_sol()
+            # self.recursive_backtrack()
+            # self.recurse_sol()
+            self.kruskal()
         elif level == 2:
             self.prim()
         elif level == 3:
@@ -37,6 +38,10 @@ class Maze:
     def num_to_coords(self, num):
         n = self.side // 2 + 1
         return 2 * (num % n), 2 * (num // n)
+
+    def eller(self):
+        # consider even rows only
+        pass
 
     def kruskal(self):
         n = self.side // 2 + 1

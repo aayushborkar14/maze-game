@@ -8,6 +8,8 @@ from tiles import Tileset
 from trap import Trap
 
 pygame.init()
+pygame.mixer.init()
+pygame.mixer.music.load("assets/maze.mp3")
 
 size = width, height = 960, 720
 screen = pygame.display.set_mode(size)
@@ -40,6 +42,7 @@ def manhattan_distance(a, b):
 
 def maze_game(level, maze_state=None):
     global running, player_sprite, gamestate, gamelevel
+    pygame.mixer.music.play(-1)
     if maze_state is not None:
         if "player_pos" in maze_state:
             player_pos = maze_state["player_pos"]
@@ -186,6 +189,14 @@ def maze_game(level, maze_state=None):
             ]
             not in (0, Trap.EMPTY)
         ):
+            if not (freeze_time or reduced_time):
+                music_pos = pygame.mixer.music.get_pos()
+                print(music_pos)
+                pygame.mixer.music.stop()
+                pygame.mixer.music.unload()
+                pygame.mixer.music.load("assets/lowpassmaze.mp3")
+                pygame.mixer.music.play(-1)
+                pygame.mixer.music.set_pos(music_pos)
             if (
                 (
                     trap_map.map[
@@ -196,6 +207,7 @@ def maze_game(level, maze_state=None):
                 == Trap.SPRITE_FREEZE
             ):
                 freeze_time = 5
+                reduced_time = 0
             elif (
                 (
                     trap_map.map[
@@ -231,8 +243,22 @@ def maze_game(level, maze_state=None):
                         time_plus_left -= 1
                     if freeze_time:
                         freeze_time -= 1
+                        if not freeze_time:
+                            music_pos = pygame.mixer.music.get_pos()
+                            pygame.mixer.music.stop()
+                            pygame.mixer.music.unload()
+                            pygame.mixer.music.load("assets/maze.mp3")
+                            pygame.mixer.music.play(-1)
+                            pygame.mixer.music.set_pos(music_pos)
                     if reduced_time:
                         reduced_time -= 1
+                        if not reduced_time:
+                            music_pos = pygame.mixer.music.get_pos()
+                            pygame.mixer.music.stop()
+                            pygame.mixer.music.unload()
+                            pygame.mixer.music.load("assets/maze.mp3")
+                            pygame.mixer.music.play(-1)
+                            pygame.mixer.music.set_pos(music_pos)
         keys = pygame.key.get_pressed()
         if keys[pygame.K_ESCAPE]:
             return menu()
@@ -568,6 +594,7 @@ def maze_game(level, maze_state=None):
 
 
 def game_end(score, completed, level):
+    pygame.mixer.music.stop()
     global running
     scores = []
     if os.path.isfile(f"highscores{level}.txt"):

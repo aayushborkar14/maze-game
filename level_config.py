@@ -5,7 +5,15 @@ from trap import Trap, TrapMap
 
 
 class LevelConfig:
+    """
+    Class that holds the configuration for each level.
+    Contains the tilesets, tilemaps, powerups, traps, and time limits for each level.
+    """
+
     def __init__(self):
+        """
+        Initializes the tilesets, tilemaps, powerups, traps, and time limits for each level.
+        """
         self.ts2 = Tileset("assets/gen5.png")
         self.ts11 = Tileset("assets/underwater1.png", size=(16, 16))
         self.ts12 = Tileset("assets/underwater2.png", size=(16, 16))
@@ -33,6 +41,17 @@ class LevelConfig:
         }
 
     def get_level_config(self, level):
+        """
+        Returns the configuration for the given level.
+        Args:
+            level: int, the level number.
+        Returns:
+            map: Tilemap, the tilemap for the level.
+            maze: Maze, the maze for the level.
+            powerup_map: PowerUpMap, the powerup map for the level.
+            trap_map: TrapMap, the trap map for the level.
+            time: int, the time limit for the level.
+        """
         map = None
         powerup_map = PowerUpMap(70, self.powerup_weights)
         maze = Maze(level, 70)
@@ -61,7 +80,7 @@ class LevelConfig:
                 self.trap_tile,
                 size=(110, 110),
             )
-            time = 179
+            time = 180
         elif level == 2:
             map = Tilemap(
                 self.ts2,
@@ -80,7 +99,7 @@ class LevelConfig:
                 self.trap_tile,
                 size=(110, 110),
             )
-            time = 240
+            time = 180
         elif level == 3:
             self.trap_weights = {
                 Trap.EMPTY: 0.25,
@@ -104,7 +123,7 @@ class LevelConfig:
                 self.trap_tile,
                 size=(110, 110),
             )
-            time = 300
+            time = 180
         elif level == "cave":
             maze = Maze("cave", 30)
             powerup_map = None

@@ -6,7 +6,21 @@ from trap import Trap
 
 
 class Tileset:
+    """
+    A class to represent a tileset.
+
+    self.tiles: list, the tiles in the tileset.
+    """
+
     def __init__(self, file, size=(32, 32), margin=0, spacing=0):
+        """
+        Initialize the tileset.
+        Args:
+            file: str, the path to the tileset image.
+            size: tuple, the size of the tiles.
+            margin: int, the margin of the tiles. Default is 0.
+            spacing: int, the spacing between the tiles. Default is 0.
+        """
         self.file = file
         self.size = size
         self.margin = margin
@@ -17,6 +31,10 @@ class Tileset:
         self.load()
 
     def load(self):
+        """
+        Load the tiles from the tileset image.
+        Called by the constructor.
+        """
         self.tiles = []
         x0 = y0 = self.margin
         w, h = self.rect.size
@@ -32,6 +50,11 @@ class Tileset:
 
 
 class Tilemap:
+    """
+    Class to represent a tilemap.
+    Blits the tiles from the tilesets to self.image based on the tilemap numpy arrays.
+    """
+
     def __init__(
         self,
         tileset1,
@@ -53,6 +76,29 @@ class Tilemap:
         rect=None,
         image_path="path.png",
     ):
+        """
+        Initialize the tilemap.
+
+        Args:
+            tileset1: str, the path to the base tileset.
+            tileset2: str, the path to the terrain tileset.
+            tileset3: str, the path to the top tileset.
+            base_layer: str, the path to the base layer numpy array.
+            terrain_layer: str, the path to the terrain layer numpy array.
+            top_layer: str, the path to the top layer numpy array.
+            powerup_map: ndarray, the powerup map numpy array.
+            trap_map: ndarray, the trap map numpy array.
+            maze_layer: ndarray, the maze layer numpy array.
+            sol_layer: ndarray, the solution layer numpy array.
+            wall_tile: int, the wall tile.
+            sol_tile: int, the solution tile.
+            powerup_tiles: dict, the powerup tiles.
+            trap_tile: int, the trap tile.
+            size: tuple, the size of the tilemap. Default is (110, 110).
+            game: tuple, the size of the game. Default is (70 - 1, 70 - 1).
+            rect: tuple, the rect of the tilemap. Default is None. If None, it will be the same as the image.
+            image_path: str, the path to the image of the tilemap. Default is "path.png".
+        """
         self.size = size
         self.tileset1 = tileset1
         self.tileset2 = tileset2
@@ -85,6 +131,10 @@ class Tilemap:
             self.rect = self.image.get_rect()
 
     def process_layers(self):
+        """
+        Process the layers of the tilemap.
+        Blits the tiles to the image.
+        """
         m, n = self.size
         for i in range(m):
             for j in range(n):
@@ -140,6 +190,11 @@ class Tilemap:
         self.solimage = None
 
     def reset_tile(self, i, j):
+        """
+        Resets a tile. Blits base layer, terrain layer, top layer, and maze layer to the image.
+        But skips the trap and powerup layers.
+        Used to remove traps and powerups which have been triggered/collected.
+        """
         if self.layer1[i, j] != -1:
             tile1 = self.tileset1.tiles[self.layer1[i, j]]
             self.image.blit(tile1, (j * 32, i * 32))

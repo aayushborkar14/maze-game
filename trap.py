@@ -2,13 +2,30 @@ import numpy as np
 
 
 class Trap:
+    """
+    Enumerate the traps as integers.
+    """
+
     EMPTY = 1
     SPRITE_FREEZE = 2
     REDUCED_VISION = 3
 
 
 class TrapMap:
+    """
+    Generates a trap map for a given maze and trap weights.
+    Places a trap on a cell if it is the midpoint of a continous path of at least 5 cells.
+
+    self.map: np.array, the trap map.
+    """
+
     def __init__(self, maze, weights):
+        """
+        Initialize the trap map.
+        Args:
+            maze: np.array, the maze.
+            weights: dict, the weights of the traps.
+        """
         self.map = np.zeros(maze.shape, dtype=int)
         weight_keys = list(weights.keys())
         weight_values = list(weights.values())

@@ -7,7 +7,23 @@ from disjoint_set import DisjointSet
 
 
 class Maze:
+    """
+    Class to generate a maze using different algorithms
+
+    self.cells: np.array, the maze
+    """
+
     def __init__(self, level, side=70):
+        """
+        Initialize the maze object
+        Args:
+            level: int/str, The level of the maze to be generated
+            side: The side length of the maze (default 70)
+        Level 1: Prim's algorithm
+        Level 2: Eller's algorithm
+        Level 3: Wilson's algorithm
+        Level "cave": Recursive Backtracking
+        """
         self.side = side - int(side % 2 == 0)
         self.cells = np.full(
             (self.side, self.side), True
@@ -19,7 +35,6 @@ class Maze:
             (self.side, self.side), True
         )  # True if wall, False if path
         self.level = level
-        self.sol_str = ""
         random.seed(time.time())
         if level == 1:
             self.prim()
@@ -32,19 +47,36 @@ class Maze:
             self.recurse_sol()
 
     def check_bounds(self, x, y):
+        """
+        Check if the given coordinates are within the maze bounds
+        Args:
+            x: int, x-coordinate
+            y: int, y-coordinate
+        Returns:
+            bool, True if within bounds, False otherwise
+        """
         return 0 <= x < self.side and 0 <= y < self.side
 
     def num_to_coords(self, num):
+        """
+        Convert a number to coordinates in the maze
+        Args:
+            num: int, the number to be converted
+        Returns:
+            tuple, the coordinates
+        """
         n = self.side // 2 + 1
         return 2 * (num % n), 2 * (num // n)
 
     def eller(self):
+        """
+        Generate a maze using the Eller's algorithm
+        """
         self.cells = np.vstack([self.cells, np.full((1, self.side), True)])
         rt = 70
         bt = 20
         right_weight_list = [False] * rt + [True] * (100 - rt)
         bottom_weight_list = [False] * bt + [True] * (100 - bt)
-        # weight_lists = [True, False]
         prev_sets = []
         # consider even rows only
         for i in range(0, self.side, 2):
@@ -114,12 +146,16 @@ class Maze:
             if max(s) + 1 < self.side:
                 self.cells[self.side - 1, max(s) + 1] = False
         self.cells = self.cells[: self.side, :]
+        # solve the maze and write the path
         self.solution = self.solve_maze(
             [[False for _ in range(self.side)] for _ in range(self.side)]
         )
         self.write_path()
 
     def kruskal(self):
+        """
+        Generate a maze using the Kruskal's algorithm
+        """
         n = self.side // 2 + 1
         dsu = DisjointSet(n**2)
         for i in range(n**2):
@@ -146,12 +182,16 @@ class Maze:
                 self.cells[(x1 + x2) // 2, y1] = False
                 self.cells[x1, y1] = False
                 self.cells[x2, y1] = False
+        # solve the maze and write the path
         self.solution = self.solve_maze(
             [[False for _ in range(self.side)] for _ in range(self.side)]
         )
         self.write_path()
 
     def prim(self):
+        """
+        Generate a maze using the Prim's algorithm
+        """
         n = self.side // 2 + 1
         x, y = 2 * random.randint(0, n - 1), 2 * random.randint(0, n - 1)
         path = [(x, y)]
@@ -185,12 +225,16 @@ class Maze:
                     if self.check_bounds(nx, ny):
                         walls.append((nx, ny))
             walls.remove((wx, wy))
+        # solve the maze and write the path
         self.solution = self.solve_maze(
             [[False for _ in range(self.side)] for _ in range(self.side)]
         )
         self.write_path()
 
     def solve_maze(self, visited, x=0, y=0):
+        """
+        Solve the maze using recursive DFS
+        """
         if visited[x][y]:
             return []
         visited[x][y] = True
@@ -210,6 +254,9 @@ class Maze:
         return []
 
     def recursive_backtrack(self, x=0, y=0):
+        """
+        Generate a maze using the recursive backtracking algorithm
+        """
         self.cells[x, y] = False
         dirs = [(1, 0), (0, 1), (-1, 0), (0, -1)]
         random.shuffle(dirs)
@@ -223,6 +270,9 @@ class Maze:
         return
 
     def recurse_sol(self):
+        """
+        Solve the maze if it is recursive backtracking
+        """
         u = (self.side - 1, self.side - 1)
         while u:
             self.solution.append(u)
@@ -231,6 +281,10 @@ class Maze:
         self.write_path()
 
     def write_path(self):
+        """
+        Write the path string consisting of L, R, U, D to a file
+        File name is path.txt for levels 1, 2, 3 or cave_path.txt for cave level
+        """
         prex, prey = 0, 0
         pathstr = ""
         for y, x in self.solution[::-1]:
@@ -253,9 +307,11 @@ class Maze:
             pathfilename = "cave_path.txt"
         with open(pathfilename, "w+") as f:
             f.write(pathstr)
-        self.sol_str = pathstr
 
     def wilson(self):
+        """
+        Generate a maze using the Wilson's algorithm
+        """
         unvisited = [
             (x, y) for x in range(0, self.side, 2) for y in range(0, self.side, 2)
         ]
@@ -297,6 +353,7 @@ class Maze:
                     self.cells[u] = False
                     if u in unvisited:
                         unvisited.remove(u)
+        # solve the maze and write the path
         self.solution = self.solve_maze(
             [[False for _ in range(self.side)] for _ in range(self.side)]
         )

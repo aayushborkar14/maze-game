@@ -26,10 +26,28 @@ gamelevel = 1
 
 
 def font_with_size(size):
+    """
+    Get pygame font object with the specified size
+    Args:
+        size: int, Font size
+    Returns:
+        pygame.font.Font object
+    """
     return pygame.font.Font("assets/Teko-Regular.ttf", size)
 
 
 def render_text(text, size, color, x, y):
+    """
+    Render text on the screen
+    Args:
+        text: str, Text to render
+        size: int, Font size
+        color: pygame.Color object, Text color
+        x: int, X coordinate
+        y: int, Y coordinate
+    Returns:
+        Tuple of pygame.Surface, pygame.Rect, Text surface and its rectangle
+    """
     text = font_with_size(size).render(text, True, color)
     text_rect = text.get_rect(center=(x, y))
     screen.blit(text, text_rect)
@@ -37,12 +55,27 @@ def render_text(text, size, color, x, y):
 
 
 def manhattan_distance(a, b):
+    """
+    Calculate Manhattan distance between two points
+    Args:
+        a: Tuple of int, Point 1
+        b: Tuple of int, Point 2
+    Returns:
+        int, Manhattan distance between the two points
+    """
     return abs(a[0] - b[0]) + abs(a[1] - b[1])
 
 
 def maze_game(level, maze_state=None):
+    """
+    Main game loop for the maze game's gameplay
+    Args:
+        level: int, Level number
+        maze_state: dict, Maze state to resume the game from (optional)
+    """
     global running, player_sprite, gamestate, gamelevel
     pygame.mixer.music.play(-1)
+    # Resume game from the saved state
     if maze_state is not None:
         if "player_pos" in maze_state:
             player_pos = maze_state["player_pos"]
@@ -90,6 +123,7 @@ def maze_game(level, maze_state=None):
     black_surface.fill((0, 0, 0))
     freeze_time = 0
     reduced_time = 0
+    # Black screen fade in effect
     for i in range(31, 0, -1):
         black_surface.set_alpha(i * 8)
         screen.blit(
@@ -116,7 +150,9 @@ def maze_game(level, maze_state=None):
         screen.blit(black_surface, (0, 0))
         pygame.display.update()
         clock.tick(60)
+    # Main game loop
     while running:
+        # If player reaches the end of the game
         if player_pos == (gameend - 1, gameend - 1):
             black_surface = pygame.Surface(
                 (
@@ -228,6 +264,7 @@ def maze_game(level, maze_state=None):
         move_offset = None
         sprite1 = 0
         sprite2 = 0
+        # event handling
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
@@ -258,6 +295,7 @@ def maze_game(level, maze_state=None):
                             pygame.mixer.music.load("assets/maze.mp3")
                             pygame.mixer.music.play(-1)
                             pygame.mixer.music.set_pos(music_pos)
+        # key handling
         keys = pygame.key.get_pressed()
         if keys[pygame.K_ESCAPE]:
             return menu()
@@ -294,6 +332,7 @@ def maze_game(level, maze_state=None):
             move_offset = (1, 0)
             sprite_facing = (1, 0)
         powerup_used = False
+        # powerup handling
         if keys[pygame.K_SPACE] and powerup_map is not None:
             for dx, dy in dirs:
                 if (
@@ -393,6 +432,7 @@ def maze_game(level, maze_state=None):
                         player_pos[0] - gamestart + dy,
                     ] = PowerUp.EMPTY
                     break
+        # jump handling
         if keys[pygame.K_SPACE] and not powerup_used:
             jx, jy = 0, -1
             dx, dy = sprite_facing
@@ -507,6 +547,7 @@ def maze_game(level, maze_state=None):
                 player_pos[0] + (jfactor // 2) * dx,
                 player_pos[1] + (jfactor // 2) * dy,
             )
+        # smooth movement handling
         elif (
             move_offset is not None
             and player_pos[0] + move_offset[0] >= gamestart
@@ -593,6 +634,14 @@ def maze_game(level, maze_state=None):
 
 
 def game_end(score, completed, level):
+    """
+    Game end screen
+    Args:
+        score: int, game score
+        completed: bool, level completed or not
+        level: int, level
+    Returns to menu if user presses escape or selects exit
+    """
     pygame.mixer.music.stop()
     global running
     scores = []
@@ -654,6 +703,11 @@ def game_end(score, completed, level):
 
 
 def leaderboard_selector():
+    """
+    Select the level for which leaderboard is to be displayed
+    Returns to menu if user presses escape
+    Returns the leaderboard for the selected level otherwise
+    """
     global running, selected_level
     selected_level = 1
     while running:
@@ -688,6 +742,11 @@ def leaderboard_selector():
 
 
 def leaderboard(level):
+    """
+    Display the leaderboard for the selected level
+    Args:
+        level: int, selected level
+    """
     global running
     scores = []
     if os.path.isfile(f"highscores{level}.txt"):
@@ -718,6 +777,10 @@ def leaderboard(level):
 
 
 def menu():
+    """
+    The main menu of the game
+    Exits the game if user presses escape
+    """
     global running, selected_level
     pygame.display.set_caption("Main Menu")
 

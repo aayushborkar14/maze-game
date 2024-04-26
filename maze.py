@@ -19,13 +19,12 @@ class Maze:
             (self.side, self.side), True
         )  # True if wall, False if path
         self.level = level
+        self.sol_str = ""
         random.seed(time.time())
         if level == 1:
-            # self.recursive_backtrack()
-            # self.recurse_sol()
-            self.eller()
-        elif level == 2:
             self.prim()
+        elif level == 2:
+            self.eller()
         elif level == 3:
             self.wilson()
         elif level == "cave":
@@ -41,9 +40,13 @@ class Maze:
 
     def eller(self):
         self.cells = np.vstack([self.cells, np.full((1, self.side), True)])
-        # consider even rows only
-        weight_lists = [False] * 60 + [True] * 40
+        rt = 70
+        bt = 20
+        right_weight_list = [False] * rt + [True] * (100 - rt)
+        bottom_weight_list = [False] * bt + [True] * (100 - bt)
+        # weight_lists = [True, False]
         prev_sets = []
+        # consider even rows only
         for i in range(0, self.side, 2):
             sets = []
             if i:
@@ -74,7 +77,7 @@ class Maze:
                             break
                     if j + 2 in sets[set_idx]:
                         self.cells[i, j + 1] = True
-                    elif random.choice(weight_lists):
+                    elif random.choice(right_weight_list):
                         self.cells[i, j + 1] = True
                     else:
                         j2_idx = 0
@@ -91,16 +94,20 @@ class Maze:
                         sets[-1].add(j)
                     self.cells[i, j] = False
                     if j + 1 < self.side:
-                        self.cells[i, j + 1] = random.choice(weight_lists)
+                        self.cells[i, j + 1] = random.choice(right_weight_list)
             for j in range(0, self.side, 2):
                 self.cells[i + 1, j] = True
             if i + 1 < self.side:
                 for s in sets:
-                    sl = list(s)
-                    for _ in range(random.randint(1, len(s) // 2 + 1)):
-                        sj = random.choice(sl)
-                        self.cells[i + 1, sj] = False
-                        sl.remove(sj)
+                    for a in s:
+                        self.cells[i + 1, a] = random.choice(bottom_weight_list)
+                    atleast_one = False
+                    for a in s:
+                        if not self.cells[i + 1, a]:
+                            atleast_one = True
+                            break
+                    if not atleast_one:
+                        self.cells[i + 1, random.choice(list(s))] = False
             prev_sets = sets
         # last row processing
         for s in prev_sets:
@@ -246,6 +253,7 @@ class Maze:
             pathfilename = "cave_path.txt"
         with open(pathfilename, "w+") as f:
             f.write(pathstr)
+        self.sol_str = pathstr
 
     def wilson(self):
         unvisited = [

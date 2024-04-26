@@ -382,7 +382,7 @@ def maze_game(level, maze_state=None):
                     ):
                         gamelevel = level
                         md0 = manhattan_distance(player_pos, (gamestart, gamestart))
-                        md_exit = md0 + 28
+                        md_exit = min(md0 + 56, 130)
                         exit_pos = player_pos
                         for i in range(0, gameend - gamestart):
                             for j in range(0, gameend - gamestart):

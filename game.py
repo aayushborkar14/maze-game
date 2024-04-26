@@ -727,8 +727,8 @@ def leaderboard_selector():
             hard_color = "#ff0000"
         screen.fill((0, 0, 0))
         render_text("Select a level", 100, "#ffffff", width / 2, 100)
-        render_text("Easy", 50, easy_color, width / 2, 200)
-        render_text("Medium", 50, medium_color, width / 2, 300)
+        render_text("Easy", 50, easy_color, width / 2, 250)
+        render_text("Medium", 50, medium_color, width / 2, 325)
         render_text("Hard", 50, hard_color, width / 2, 400)
         render_text("Press Esc to go back", 30, "#ffffff", width / 2, 600)
         render_text("Press Enter to continue", 30, "#ffffff", width / 2, 650)

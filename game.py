@@ -13,6 +13,7 @@ pygame.mixer.music.load("assets/maze.mp3")
 
 size = width, height = 960, 720
 screen = pygame.display.set_mode(size)
+pygame.display.set_caption(f"Maze Game")
 running = True
 score_rect = pygame.Rect(0, 640, 960, 80)
 clock = pygame.time.Clock()
@@ -215,6 +216,7 @@ def maze_game(level, maze_state=None):
                 (screen.get_width(), screen.get_height())
             ).convert_alpha()
             freeze_screen.fill((0, 0, 0, 128))
+            screen.blit(freeze_screen, (0, 0))
             render_text(
                 f"Frozen for {freeze_time} seconds",
                 100,
@@ -222,7 +224,6 @@ def maze_game(level, maze_state=None):
                 width / 2,
                 height / 2,
             )
-            screen.blit(freeze_screen, (0, 0))
         if (
             trap_map is not None
             and 0 <= player_pos[0] - gamestart < gameend - gamestart
@@ -789,7 +790,6 @@ def menu():
     Exits the game if user presses escape
     """
     global running, selected_level
-    pygame.display.set_caption("Main Menu")
 
     while running:
         screen.fill((0, 0, 0))

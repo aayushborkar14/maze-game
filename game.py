@@ -164,7 +164,7 @@ def maze_game(level, maze_state=None):
             render_text(f"Score: {score}", 30, "#ffffff", width / 4, 680)
             render_text(f"Time: {time}", 30, "#ffffff", 3 * width / 4, 680)
             if score_plus_left:
-                render_text("+100", 30, "#00ff00", 3 * width / 8, 680)
+                render_text("+500", 30, "#00ff00", 3 * width / 8, 680)
             if time_plus_left:
                 render_text("+10", 30, "#00ff00", 7 * width / 8, 680)
             freeze_screen = pygame.Surface(
@@ -314,7 +314,7 @@ def maze_game(level, maze_state=None):
                         ]
                         == PowerUp.SCORE_GAIN
                     ):
-                        collect_score += 100
+                        collect_score += 500
                         score_plus_left = 2
                     elif (
                         powerup_map.map[
@@ -550,7 +550,7 @@ def maze_game(level, maze_state=None):
                 render_text(f"Score: {score}", 30, "#ffffff", width / 4, 680)
                 render_text(f"Time: {time}", 30, "#ffffff", 3 * width / 4, 680)
                 if score_plus_left:
-                    render_text("+100", 30, "#00ff00", 3 * width / 8, 680)
+                    render_text("+500", 30, "#00ff00", 3 * width / 8, 680)
                 if time_plus_left:
                     render_text("+10", 30, "#00ff00", 7 * width / 8, 680)
                 if reduced_time:
@@ -575,7 +575,7 @@ def maze_game(level, maze_state=None):
         render_text(f"Score: {score}", 30, "#ffffff", width / 4, 680)
         render_text(f"Time: {time}", 30, "#ffffff", 3 * width / 4, 680)
         if score_plus_left:
-            render_text("+100", 30, "#00ff00", 3 * width / 8, 680)
+            render_text("+500", 30, "#00ff00", 3 * width / 8, 680)
         if time_plus_left:
             render_text("+10", 30, "#00ff00", 7 * width / 8, 680)
         if reduced_time and not image_blitted:

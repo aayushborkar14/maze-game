@@ -39,6 +39,11 @@ class LevelConfig:
         trap_map = TrapMap(maze.cells, self.trap_weights)
         time = None
         if level == 1:
+            self.trap_weights = {
+                Trap.EMPTY: 0.5,
+                Trap.SPRITE_FREEZE: 0.25,
+                Trap.REDUCED_VISION: 0.25,
+            }
             map = Tilemap(
                 self.ts11,
                 self.ts11,
@@ -77,6 +82,11 @@ class LevelConfig:
             )
             time = 240
         elif level == 3:
+            self.trap_weights = {
+                Trap.EMPTY: 0.25,
+                Trap.SPRITE_FREEZE: 0.375,
+                Trap.REDUCED_VISION: 0.375,
+            }
             map = Tilemap(
                 self.ts3,
                 self.ts3,

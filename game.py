@@ -123,6 +123,8 @@ def maze_game(level, maze_state=None):
     black_surface.fill((0, 0, 0))
     freeze_time = 0
     reduced_time = 0
+    powerup_used = False
+    jump_skips = 0
     # Black screen fade in effect
     for i in range(31, 0, -1):
         black_surface.set_alpha(i * 8)
@@ -176,6 +178,12 @@ def maze_game(level, maze_state=None):
             assert time is not None
             score = man_score + collect_score + time * 100
             return game_end(score, True, level)
+        if powerup_used:
+            if jump_skips < 8:
+                jump_skips += 1
+            else:
+                jump_skips = 0
+                powerup_used = False
         image_blitted = False
         screen.blit(
             map.image,
@@ -331,7 +339,6 @@ def maze_game(level, maze_state=None):
             rflip = True
             move_offset = (1, 0)
             sprite_facing = (1, 0)
-        powerup_used = False
         # powerup handling
         if keys[pygame.K_SPACE] and powerup_map is not None:
             for dx, dy in dirs:

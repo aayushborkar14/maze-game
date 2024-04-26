@@ -107,6 +107,10 @@ class Maze:
             if max(s) + 1 < self.side:
                 self.cells[self.side - 1, max(s) + 1] = False
         self.cells = self.cells[: self.side, :]
+        self.solution = self.solve_maze(
+            [[False for _ in range(self.side)] for _ in range(self.side)]
+        )
+        self.write_path()
 
     def kruskal(self):
         n = self.side // 2 + 1

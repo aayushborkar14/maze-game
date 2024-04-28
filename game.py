@@ -746,20 +746,20 @@ def game_end(score, completed, level):
     pygame.mixer.music.stop()
     global running
     scores = []
-    if os.path.isfile(f"highscores{level}.txt"):
-        with open(f"highscores{level}.txt", "r") as f:
+    if os.path.isfile(f"leaderboard/highscores{level}.txt"):
+        with open(f"leaderboard/highscores{level}.txt", "r") as f:
             for line in f:
                 if line.strip().isdigit():
                     scores.append(int(line.strip()))
         scores.append(score)
-        with open(f"highscores{level}.txt", "w+") as f:
+        with open(f"leaderboard/highscores{level}.txt", "w+") as f:
             for i, s in enumerate(sorted(scores, reverse=True)):
                 if i >= 8:
                     break
                 f.write(f"{s}\n")
     else:
         scores.append(score)
-        with open(f"highscores{level}.txt", "w") as f:
+        with open(f"leaderboard/highscores{level}.txt", "w") as f:
             f.write(f"{score}\n")
     selected_option = 0
     score_count = 0
@@ -850,8 +850,8 @@ def leaderboard(level):
     """
     global running
     scores = []
-    if os.path.isfile(f"highscores{level}.txt"):
-        with open(f"highscores{level}.txt", "r") as f:
+    if os.path.isfile(f"leaderboard/highscores{level}.txt"):
+        with open(f"leaderboard/highscores{level}.txt", "r") as f:
             for line in f:
                 if line.strip().isdigit():
                     scores.append(int(line.strip()))

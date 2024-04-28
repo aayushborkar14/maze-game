@@ -213,7 +213,10 @@ def maze_game(level, maze_state=None):
                             paused = False
                             pause_cooldown = 8
                         else:
-                            return game_end(score, False, level)
+                            if level == "cave":
+                                return game_end(score, False, gamelevel)
+                            else:
+                                return game_end(score, False, level)
                     if event.key == pygame.K_ESCAPE:
                         paused = False
                         pause_cooldown = 8
@@ -243,7 +246,10 @@ def maze_game(level, maze_state=None):
                 )
                 assert time is not None
                 score = man_score + collect_score + time * 100
-                return game_end(score, True, level)
+                if level == "cave":
+                    return game_end(score, True, gamelevel)
+                else:
+                    return game_end(score, True, level)
             if powerup_used:
                 if jump_skips < 8:
                     jump_skips += 1
@@ -349,7 +355,10 @@ def maze_game(level, maze_state=None):
                     if isinstance(time, int):
                         time -= 1
                         if time < 0:
-                            return game_end(score, False, level)
+                            if level == "cave":
+                                return game_end(score, False, gamelevel)
+                            else:
+                                return game_end(score, False, level)
                         if score_plus_left:
                             score_plus_left -= 1
                         if time_plus_left:

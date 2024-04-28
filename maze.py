@@ -246,7 +246,7 @@ class Maze:
         u = (self.side - 1, self.side - 1)
         while u:
             self.solution.append(u)
-            self.sol_cells[*u] = False
+            self.sol_cells[u] = False
             u = self.parent[u]
         self.write_path()
 

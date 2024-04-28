@@ -11,6 +11,9 @@ pygame.init()
 pygame.mixer.init()
 pygame.mixer.music.load("assets/maze.mp3")
 
+if not os.path.exists("leaderboard"):
+    os.makedirs("leaderboard")
+
 size = width, height = 960, 720
 screen = pygame.display.set_mode(size)
 pygame.display.set_caption("Maze Game")
@@ -211,6 +214,7 @@ def maze_game(level, maze_state=None):
                     if event.key == pygame.K_RETURN:
                         if pause_selection == 0:
                             paused = False
+                            pygame.mixer.music.unpause()
                             pause_cooldown = 8
                         else:
                             if level == "cave":
@@ -219,6 +223,7 @@ def maze_game(level, maze_state=None):
                                 return game_end(score, False, level)
                     if event.key == pygame.K_ESCAPE:
                         paused = False
+                        pygame.mixer.music.unpause()
                         pause_cooldown = 8
             pygame.display.update()
         else:
@@ -386,6 +391,7 @@ def maze_game(level, maze_state=None):
             if keys[pygame.K_ESCAPE]:
                 if not pause_cooldown:
                     paused = True
+                    pygame.mixer.music.pause()
             if freeze_time:
                 pygame.display.update()
                 clock.tick(60)  # limit the frame rate to 60 FPS
@@ -752,7 +758,7 @@ def game_end(score, completed, level):
                 if line.strip().isdigit():
                     scores.append(int(line.strip()))
         scores.append(score)
-        with open(f"leaderboard/highscores{level}.txt", "w+") as f:
+        with open(f"leaderboard/highscores{level}.txt", "w") as f:
             for i, s in enumerate(sorted(scores, reverse=True)):
                 if i >= 8:
                     break

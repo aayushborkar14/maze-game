@@ -35,9 +35,9 @@ class Maze:
         self.level = level
         random.seed(time.time())
         if level == 1:
-            self.prim()
+            self.growing_tree()
         elif level == 2:
-            self.eller()
+            self.prim()
         elif level == 3:
             self.wilson()
         elif level == "cave":
@@ -65,90 +65,6 @@ class Maze:
         """
         n = self.side // 2 + 1
         return 2 * (num % n), 2 * (num // n)
-
-    def eller(self):
-        """
-        Generate a maze using the Eller's algorithm
-        """
-        self.cells = np.vstack([self.cells, np.full((1, self.side), True)])
-        rt = 70
-        bt = 20
-        right_weight_list = [False] * rt + [True] * (100 - rt)
-        bottom_weight_list = [False] * bt + [True] * (100 - bt)
-        prev_sets = []
-        # consider even rows only
-        for i in range(0, self.side, 2):
-            sets = []
-            if i:
-                sets = prev_sets
-                not_in_set = []
-                for j in range(0, self.side, 2):
-                    self.cells[i, j] = self.cells[i - 2, j]
-                    self.cells[i + 1, j] = self.cells[i - 1, j]
-                    if j + 1 < self.side:
-                        self.cells[i, j + 1] = False
-                    if self.cells[i + 1, j]:
-                        for idx, s in enumerate(sets):
-                            if j in s:
-                                break
-                        if sets[idx] == {j}:
-                            sets.pop(idx)
-                        else:
-                            sets[idx].remove(j)
-                        not_in_set.append(j)
-                    self.cells[i + 1, j] = False
-                for j in not_in_set:
-                    sets.append({j})
-                sets.sort(key=min)
-                set_idx = 0
-                for j in range(0, self.side - 2, 2):
-                    for set_idx, s in enumerate(sets):
-                        if j in s:
-                            break
-                    if j + 2 in sets[set_idx]:
-                        self.cells[i, j + 1] = True
-                    elif random.choice(right_weight_list):
-                        self.cells[i, j + 1] = True
-                    else:
-                        j2_idx = 0
-                        for j2_idx, j2 in enumerate(sets):
-                            if j + 2 in j2:
-                                break
-                        sets[set_idx] = sets[set_idx].union(sets[j2_idx])
-                        sets.pop(j2_idx)
-            else:
-                for j in range(0, self.side, 2):
-                    if j == 0 or self.cells[i, j - 1]:
-                        sets.append({j})
-                    else:
-                        sets[-1].add(j)
-                    self.cells[i, j] = False
-                    if j + 1 < self.side:
-                        self.cells[i, j + 1] = random.choice(right_weight_list)
-            for j in range(0, self.side, 2):
-                self.cells[i + 1, j] = True
-            if i + 1 < self.side:
-                for s in sets:
-                    for a in s:
-                        self.cells[i + 1, a] = random.choice(bottom_weight_list)
-                    atleast_one = False
-                    for a in s:
-                        if not self.cells[i + 1, a]:
-                            atleast_one = True
-                            break
-                    if not atleast_one:
-                        self.cells[i + 1, random.choice(list(s))] = False
-            prev_sets = sets
-        # last row processing
-        for s in prev_sets:
-            if max(s) + 1 < self.side:
-                self.cells[self.side - 1, max(s) + 1] = False
-        self.cells = self.cells[: self.side, :]
-        # solve the maze and write the path
-        self.solution = self.solve_maze(
-            [[False for _ in range(self.side)] for _ in range(self.side)]
-        )
-        self.write_path()
 
     def kruskal(self):
         """
@@ -223,6 +139,62 @@ class Maze:
                     if self.check_bounds(nx, ny):
                         walls.append((nx, ny))
             walls.remove((wx, wy))
+        # solve the maze and write the path
+        self.solution = self.solve_maze(
+            [[False for _ in range(self.side)] for _ in range(self.side)]
+        )
+        self.write_path()
+
+    def growing_tree(self):
+        """
+        Generate a maze using the Growing Tree algorithm
+        This algorithm is a generalization of the Recursive Backtracking algorithm
+        My implementation picks the last added cell with a probability of 70% and a random cell with 30%
+        """
+        for x in range(self.side):
+            for y in range(self.side):
+                if not (x % 2 == 1 and y % 2 == 1):
+                    self.cells[x, y] = False
+        x, y = (
+            2 * random.randint(0, self.side // 2),
+            2 * random.randint(0, self.side // 2),
+        )
+        cells = []
+        cells.append((x, y))
+        dirs = [(1, 0), (0, 1), (-1, 0), (0, -1)]
+        visited = [[False for _ in range(self.side)] for _ in range(self.side)]
+        visited[x][y] = True
+        while cells:
+            a = random.randint(1, 100)
+            if a <= 70:
+                # pick the most recent cell from the list
+                x, y = cells[-1]
+            else:
+                # pick a random cell from the list
+                x, y = random.choice(cells)
+            found_one = False
+            random.shuffle(dirs)
+            for dx, dy in dirs:
+                nx, ny = x + 2 * dx, y + 2 * dy
+                if self.check_bounds(nx, ny) and not visited[nx][ny]:
+                    found_one = True
+                    visited[nx][ny] = True
+                    self.parent[x + dx, y + dy] = (x, y)
+                    self.parent[nx, ny] = (x + dx, y + dy)
+                    if dx == 0:
+                        if self.check_bounds(nx + 1, ny):
+                            self.cells[nx + 1, ny] = True
+                        if self.check_bounds(nx - 1, ny):
+                            self.cells[nx - 1, ny] = True
+                    elif dy == 0:
+                        if self.check_bounds(nx, ny + 1):
+                            self.cells[nx, ny + 1] = True
+                        if self.check_bounds(nx, ny - 1):
+                            self.cells[nx, ny - 1] = True
+                    self.cells[x + dx, y + dy] = False
+                    cells.append((nx, ny))
+            if not found_one:
+                cells.remove((x, y))
         # solve the maze and write the path
         self.solution = self.solve_maze(
             [[False for _ in range(self.side)] for _ in range(self.side)]

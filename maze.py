@@ -17,8 +17,8 @@ class Maze:
         Args:
             level: int/str, The level of the maze to be generated
             side: The side length of the maze (default 70)
-        Level 1: Prim's algorithm
-        Level 2: Eller's algorithm
+        Level 1: Growing Tree algorithm
+        Level 2: Prim's algorithm
         Level 3: Wilson's algorithm
         Level "cave": Recursive Backtracking
         """
